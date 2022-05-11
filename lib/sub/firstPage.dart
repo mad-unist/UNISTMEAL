@@ -24,6 +24,10 @@ class _MealAppState extends State<MealApp> {
         ),
         body: PageView(
           children: [
+            exampleGridView(5, 11, "아침"),
+            exampleGridView(5, 11, "점심"),
+            exampleGridView(5, 11, "저녁"),
+            exampleGridView(5, 13, "아침"),
             exampleGridView(5, 13, "점심"),
             exampleGridView(5, 14, "점심"),
           ],
@@ -31,12 +35,12 @@ class _MealAppState extends State<MealApp> {
       ),
     );
   }
-  Widget exampleGridView(month, day, type) {
-    List<Meal>? newlist = list?.where((data) => data.month == month && data.day == day).toList();
+  Widget exampleGridView(month, day, time) {
+    List<Meal>? newlist = list?.where((data) => data.month == month && data.day == day && data.time == time).toList();
     return Scaffold(
       body: Column(
         children: [
-          Text('${month}월 ${day}일 ${type}', textAlign: TextAlign.center, style: TextStyle(fontSize: 30)),
+          Text('${month}월 ${day}일 ${time}', textAlign: TextAlign.center, style: TextStyle(fontSize: 30)),
           new Expanded(
             child: Container(
               child: GridView.builder(

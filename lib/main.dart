@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:unistapp/meal.dart';
 import 'package:unistapp/sub/firstPage.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'dart:async';
 
 void main() {
   runApp(const MyApp());
@@ -49,13 +52,30 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin{
-
   TabController? controller;
   List<Meal> mealList = List.empty(growable: true);
   @override
   void initState() {
     super.initState();
     controller = TabController(length: 1, vsync: this);
+    Future<String> fetchPost() async {
+      final response = await http.get(Uri.parse('https://unist-meal-backend.herokuapp.com/menu/v1/menus?format=json'));
+      print(response.body);
+      print(utf8.decode(response.bodyBytes));
+      setState(() {
+        var _text = utf8.decode(response.bodyBytes);
+        var data = jsonDecode(_text)['data'] as List;
+        data.forEach((element) {
+          print(element);
+          mealList.add(Meal.fromJson(element));
+          print(Meal.fromJson(element).day);
+          print(Meal.fromJson(element).month);
+        });
+      });
+      print("YES!!!");
+      return "Sucessful";
+    }
+    fetchPost();
     mealList.add(Meal(place: "기숙사식당", type: "일품", time: "점심", content: "우동", month: 5, day: 13, calorie: 1100));
     mealList.add(Meal(place: "기숙사식당", type: "할랄", time: "점심", content: "타코", month: 5, day: 13, calorie: 1100));
     mealList.add(Meal(place: "학생식당", type: "한식", time: "점심", content: "떡볶이", month: 5, day: 13, calorie: 1100));

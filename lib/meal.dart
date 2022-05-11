@@ -22,4 +22,17 @@ class Meal{
       'calorie': calorie,
     };
   }
+  factory Meal.fromJson(Map<String, dynamic> json) {
+    return Meal(
+      id: json['id'],
+      place: json['place'],
+      type: json['type'],
+      time: json['time'],
+      content: json['content'],
+      calorie: json['calorie'],
+      month: int.parse(json['date'].split('-')[1]),
+      day: int.parse(json['date'].split('-')[2].split('T')[0])
+    );
+  }
+
 }
