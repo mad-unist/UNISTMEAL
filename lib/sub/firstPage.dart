@@ -30,6 +30,7 @@ class _MealAppState extends State<MealApp> {
             exampleGridView(5, 13, "아침"),
             exampleGridView(5, 13, "점심"),
             exampleGridView(5, 14, "점심"),
+            exampleGridView(5, 15, "점심"),
           ],
         ),
       ),
