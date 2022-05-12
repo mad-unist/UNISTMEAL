@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:unistapp/meal.dart';
 import 'package:unistapp/sub/firstPage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
+
+import 'package:unistapp/sub/secondPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -90,7 +94,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     return Scaffold(
         body: TabBarView(
-          children: <Widget>[MealApp(list:mealList), MealApp(list:mealList)],
+          children: <Widget>[MealApp(list:mealList), MealPhotoApp(list:[])],
           controller: controller,
         ),
         bottomNavigationBar: TabBar(tabs: <Tab>[
@@ -107,5 +111,13 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   void dispose() {
     controller!.dispose();
     super.dispose();
+  }
+}
+
+class MyHttpOverrides extends HttpOverrides{
+  @override
+  HttpClient createHttpClient(SecurityContext? context){
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host, int port)=> true;
   }
 }
