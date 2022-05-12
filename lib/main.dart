@@ -57,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   @override
   void initState() {
     super.initState();
-    controller = TabController(length: 1, vsync: this);
+    controller = TabController(length: 2, vsync: this);
     Future<String> fetchPost() async {
       final response = await http.get(Uri.parse('https://unist-meal-backend.herokuapp.com/menu/v1/menus?format=json'));
       print(response.body);
@@ -89,16 +89,13 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('유니스트 밥먹자'),
-        ),
         body: TabBarView(
-          children: <Widget>[MealApp(list:mealList)],
+          children: <Widget>[MealApp(list:mealList), MealApp(list:mealList)],
           controller: controller,
         ),
         bottomNavigationBar: TabBar(tabs: <Tab>[
           Tab(icon: Icon(Icons.home, color: Colors.blue),) ,
-          //Tab(icon: Icon(Icons.alarm, color: Colors.blue),),
+          Tab(icon: Icon(Icons.alarm, color: Colors.blue),),
           //Tab(icon: Icon(Icons.search, color: Colors.blue),),
           //Tab(icon: Icon(Icons.restaurant_menu, color: Colors.blue),)
         ], controller: controller,
