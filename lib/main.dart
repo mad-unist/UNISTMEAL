@@ -94,8 +94,12 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     return Scaffold(
         body: TabBarView(
+<<<<<<< HEAD
           physics: NeverScrollableScrollPhysics(),
           children: <Widget>[MealApp(list:mealList), MealPhotoApp()],
+=======
+          children: <Widget>[MealApp(list:mealList), MealPhotoApp(list:[])],
+>>>>>>> 73f18745a7323ddafa9f3bd3e3c69ca504f3432b
           controller: controller,
         ),
         bottomNavigationBar: TabBar(

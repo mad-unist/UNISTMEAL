@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:unistapp/meal.dart';
+<<<<<<< HEAD
 import 'package:photo_view/photo_view.dart';
 
 class MealPhotoApp extends StatefulWidget {
@@ -10,12 +11,26 @@ class MealPhotoApp extends StatefulWidget {
 
   @override
   _MealPhotoAppState createState() => _MealPhotoAppState();
+=======
+
+class MealPhotoApp extends StatefulWidget {
+  final List<Meal>? list;
+  const MealPhotoApp({Key? key, this.list}) : super(key: key);
+
+  @override
+  _MealPhotoAppState createState() => _MealPhotoAppState(list);
+>>>>>>> 73f18745a7323ddafa9f3bd3e3c69ca504f3432b
 }
 
 
 class _MealPhotoAppState extends State<MealPhotoApp> with SingleTickerProviderStateMixin{
   TabController? controller;
+<<<<<<< HEAD
   _MealPhotoAppState();
+=======
+  final List<Meal>? list;
+  _MealPhotoAppState(this.list);
+>>>>>>> 73f18745a7323ddafa9f3bd3e3c69ca504f3432b
   void initState() {
     super.initState();
     controller = TabController(length: 3, vsync: this);
@@ -52,6 +67,7 @@ class _MealPhotoAppState extends State<MealPhotoApp> with SingleTickerProviderSt
                 toolbarHeight: 0,
               ),
               body: TabBarView(
+<<<<<<< HEAD
                 physics: NeverScrollableScrollPhysics(),
                 children: [
                   PhotoView(
@@ -66,6 +82,12 @@ class _MealPhotoAppState extends State<MealPhotoApp> with SingleTickerProviderSt
                     imageProvider: NetworkImage('http://uspace.unist.ac.kr/Storage/Cabinet/Editor/0/1172/1220506112846156088/Content/20220506113523a3c1dba1-353a-4297-af2a-ca12e7783e95.png'),
                     backgroundDecoration: BoxDecoration(color: Colors.transparent),
                   ),
+=======
+                children: [
+                    FadeInImage.assetNetwork(placeholder: 'assets/images/loading.png', image: 'https://uspace.unist.ac.kr/Storage/Cabinet/Editor/0/1172/1220508162048079110/Content/2022051010070719481fc6-2f7b-4338-85c5-16397461db35.png', fit: BoxFit.contain,),
+                    Image.network('https://uspace.unist.ac.kr/Storage/Cabinet/Editor/0/1172/1220506175135938104/Content/2022050617511408dfb69a-302c-4bcf-89c2-f6161c39e893.jpg', fit: BoxFit.contain,),
+                    Image.network('https://uspace.unist.ac.kr/Storage/Cabinet/Editor/0/1172/1220506112846156088/Content/20220506113523a3c1dba1-353a-4297-af2a-ca12e7783e95.png', fit: BoxFit.contain,),
+>>>>>>> 73f18745a7323ddafa9f3bd3e3c69ca504f3432b
                 ],
                 controller: controller,
               )
