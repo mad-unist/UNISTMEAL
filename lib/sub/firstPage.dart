@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -21,20 +23,19 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
   final pagecontroller = PageController();
   final List<Meal>? list;
   _MealAppState(this.list);
-  var day = new DateTime.now();
   void initState() {
     super.initState();
     controller = TabController(length: 3, vsync: this);
+    initializeDateFormatting('ko_KR', null);
+
   }
   @override
   Widget build(BuildContext context) {
-    initializeDateFormatting('ko_KR', null);
-    final children = <Widget>[];
+    var children = <Widget>[];
     for (var i = 0; i < 10; i++) {
       var d = DateTime.now().add(Duration(days: i));
       children.add(exampleTabView(d.month, d.day , DateFormat.E('ko_KR').format(d)));
     }
-
     return Material(
       child: Scaffold(
         appBar: AppBar(
@@ -95,9 +96,9 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
               body: TabBarView(
                 physics: NeverScrollableScrollPhysics(),
                 children: [
-                  exampleGridview(newlist!.where((data) => data.time == "아침").toList()),
-                  exampleGridview(newlist!.where((data) => data.time == "점심").toList()),
-                  exampleGridview(newlist!.where((data) => data.time == "저녘").toList()),
+                  exampleGridview(newlist?.where((data) => data.time == "아침").toList()),
+                  exampleGridview(newlist?.where((data) => data.time == "점심").toList()),
+                  exampleGridview(newlist?.where((data) => data.time == "저녁").toList()),
                 ],
                 controller: controller,
               ),
@@ -119,12 +120,40 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30)
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+              color: Colors.lightBlue[50],
+              child:  Stack(
                 children: <Widget>[
-                  Text('  ${glist![position].place!}  ${glist![position].type!}', textAlign: TextAlign.center),
-                  Text(glist![position].content!, textAlign: TextAlign.center),
-                  Text('${glist![position].calorie!}Kcal', textAlign: TextAlign.center),
+                  Container(
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: Column(
+                        children: [
+                          Text('  ${glist?[position].place!}  ${glist?[position].type!}', textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold),),
+                          Divider(
+                            thickness: 2,
+                            indent: 20,
+                            endIndent: 20,
+                            color: Colors.lightBlue,
+                          )
+                        ],
+                      ),
+                    ),
+                    padding: EdgeInsets.only(top: 10, bottom: 5,),
+                  ),
+                  Container(
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text((glist?[position].content!)!, textAlign: TextAlign.center, style: TextStyle(height: 2,),),
+                    ),
+                    padding: EdgeInsets.only(top: 5,),
+                  ),
+                  Container(
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Text('${glist![position].calorie!}Kcal'),
+                    ),
+                    padding: EdgeInsets.only(bottom: 10,),
+                  ),
                 ],
               ),
             ),

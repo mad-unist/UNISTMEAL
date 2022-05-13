@@ -94,15 +94,17 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     return Scaffold(
         body: TabBarView(
-          children: <Widget>[MealApp(list:mealList), MealPhotoApp(list:[])],
+          physics: NeverScrollableScrollPhysics(),
+          children: <Widget>[MealApp(list:mealList), MealPhotoApp()],
           controller: controller,
         ),
-        bottomNavigationBar: TabBar(tabs: <Tab>[
-          Tab(icon: Icon(Icons.home, color: Colors.blue),) ,
-          Tab(icon: Icon(Icons.alarm, color: Colors.blue),),
-          //Tab(icon: Icon(Icons.search, color: Colors.blue),),
-          //Tab(icon: Icon(Icons.restaurant_menu, color: Colors.blue),)
-        ], controller: controller,
+        bottomNavigationBar: TabBar(
+          tabs: <Tab>[
+            Tab(icon: Icon(Icons.home, color: Colors.blue),) ,
+            Tab(icon: Icon(Icons.image, color: Colors.blue),),
+            //Tab(icon: Icon(Icons.search, color: Colors.blue),),
+            //Tab(icon: Icon(Icons.restaurant_menu, color: Colors.blue),)
+          ], controller: controller,
         )
     );
   }
