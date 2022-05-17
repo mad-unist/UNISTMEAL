@@ -80,29 +80,31 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       return "Sucessful";
     }
     fetchPost();
-    mealList.add(Meal(place: "기숙사식당", type: "일품", time: "점심", content: "우동", month: 5, day: 13, calorie: 1100));
-    mealList.add(Meal(place: "기숙사식당", type: "할랄", time: "점심", content: "타코", month: 5, day: 13, calorie: 1100));
-    mealList.add(Meal(place: "학생식당", type: "한식", time: "점심", content: "떡볶이", month: 5, day: 13, calorie: 1100));
-    mealList.add(Meal(place: "교직원식당", type: "", time: "점심", content: "백반\n소고기국", month: 5, day: 13, calorie: 1100));
-    mealList.add(Meal(place: "기숙사식당", type: "일품", time: "점심", content: "라면", month: 5, day: 14, calorie: 1100));
-    mealList.add(Meal(place: "기숙사식당", type: "할랄", time: "점심", content: "샐러드", month: 5, day: 14, calorie: 1100));
-    mealList.add(Meal(place: "학생식당", type: "한식", time: "점심", content: "돈까스", month: 5, day: 14, calorie: 1100));
-    mealList.add(Meal(place: "교직원식당", type: "", time: "점심", content: "스테이크", month: 5, day: 14, calorie: 1100));
+    mealList.add(Meal(place: "기숙사식당", type: "일품", time: "아침", content: "우동", month: 5, day: 18, calorie: 1100));
+    mealList.add(Meal(place: "기숙사식당", type: "할랄", time: "점심", content: "타코", month: 5, day: 18, calorie: 1100));
+    mealList.add(Meal(place: "학생식당", type: "한식", time: "점심", content: "떡볶이", month: 5, day: 18, calorie: 1100));
+    mealList.add(Meal(place: "교직원식당", type: "", time: "점심", content: "백반\n소고기국", month: 5, day: 18, calorie: 1100));
+    mealList.add(Meal(place: "기숙사식당", type: "일품", time: "점심", content: "라면", month: 5, day: 18, calorie: 1100));
+    mealList.add(Meal(place: "기숙사식당", type: "할랄", time: "점심", content: "샐러드", month: 5, day: 18, calorie: 1100));
+    mealList.add(Meal(place: "학생식당", type: "한식", time: "저녁", content: "돈까스", month: 5, day: 18, calorie: 1100));
+    mealList.add(Meal(place: "교직원식당", type: "", time: "저녁", content: "스테이크", month: 5, day: 18, calorie: 1100));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: TabBarView(
-          children: <Widget>[MealApp(list:mealList), MealPhotoApp(list:[])],
+          physics: NeverScrollableScrollPhysics(),
+          children: <Widget>[MealApp(list:mealList), MealPhotoApp()],
           controller: controller,
         ),
-        bottomNavigationBar: TabBar(tabs: <Tab>[
-          Tab(icon: Icon(Icons.home, color: Colors.blue),) ,
-          Tab(icon: Icon(Icons.alarm, color: Colors.blue),),
-          //Tab(icon: Icon(Icons.search, color: Colors.blue),),
-          //Tab(icon: Icon(Icons.restaurant_menu, color: Colors.blue),)
-        ], controller: controller,
+        bottomNavigationBar: TabBar(
+          tabs: <Tab>[
+            Tab(icon: Icon(Icons.home, color: Colors.blue),) ,
+            Tab(icon: Icon(Icons.image, color: Colors.blue),),
+            //Tab(icon: Icon(Icons.search, color: Colors.blue),),
+            //Tab(icon: Icon(Icons.restaurant_menu, color: Colors.blue),)
+          ], controller: controller,
         )
     );
   }
