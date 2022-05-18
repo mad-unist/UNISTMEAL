@@ -128,7 +128,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                       alignment: Alignment.topCenter,
                       child: Column(
                         children: [
-                          Text('  ${glist?[position].place!}  ${glist?[position].type!}', textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold),),
+                          Text('  ${glist?[position].place}  ${glist?[position].type}', textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold),),
                           Divider(
                             thickness: 2,
                             indent: 20,
@@ -143,7 +143,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                   Container(
                     child: Align(
                       alignment: Alignment.center,
-                      child: Text((glist?[position].content!)!, textAlign: TextAlign.center, style: TextStyle(height: 2,),),
+                      child: Text((glist?[position].content)!, textAlign: TextAlign.center, style: TextStyle(height: 2,),),
                     ),
                     padding: EdgeInsets.only(top: 5,),
                   ),

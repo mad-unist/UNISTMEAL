@@ -2,12 +2,14 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:unistapp/meal.dart';
+import 'package:unistapp/restaurant.dart';
 import 'package:unistapp/sub/firstPage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 
 import 'package:unistapp/sub/secondPage.dart';
+import 'package:unistapp/sub/thirdPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -58,10 +60,11 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin{
   TabController? controller;
   List<Meal> mealList = List.empty(growable: true);
+  List<Restaurant> restList = List.empty(growable: true);
   @override
   void initState() {
     super.initState();
-    controller = TabController(length: 2, vsync: this);
+    controller = TabController(length: 3, vsync: this);
     Future<String> fetchPost() async {
       final response = await http.get(Uri.parse('https://unist-meal-backend.herokuapp.com/menu/v1/menus?format=json'));
       print(response.body);
@@ -88,6 +91,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     mealList.add(Meal(place: "기숙사식당", type: "할랄", time: "점심", content: "샐러드", month: 5, day: 18, calorie: 1100));
     mealList.add(Meal(place: "학생식당", type: "한식", time: "저녁", content: "돈까스", month: 5, day: 18, calorie: 1100));
     mealList.add(Meal(place: "교직원식당", type: "", time: "저녁", content: "스테이크", month: 5, day: 18, calorie: 1100));
+    restList.add(Restaurant(name: "할매집", place: "유니스트", type: "홀", content: "묵은지 통삼겹", phone: "01012345678"));
+    restList.add(Restaurant(name: "탕수육코리아", place: "구영리", type: "배달", content: "치즈 탕수육", phone: "01011112222"));
   }
 
   @override
@@ -95,14 +100,14 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     return Scaffold(
         body: TabBarView(
           physics: NeverScrollableScrollPhysics(),
-          children: <Widget>[MealApp(list:mealList), MealPhotoApp()],
+          children: <Widget>[MealApp(list:mealList), MealPhotoApp(), RecommendationApp(list:restList)],
           controller: controller,
         ),
         bottomNavigationBar: TabBar(
           tabs: <Tab>[
             Tab(icon: Icon(Icons.home, color: Colors.blue),) ,
             Tab(icon: Icon(Icons.image, color: Colors.blue),),
-            //Tab(icon: Icon(Icons.search, color: Colors.blue),),
+            Tab(icon: Icon(Icons.contact_phone, color: Colors.blue),),
             //Tab(icon: Icon(Icons.restaurant_menu, color: Colors.blue),)
           ], controller: controller,
         )
