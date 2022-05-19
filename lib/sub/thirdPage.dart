@@ -28,7 +28,6 @@ class _RecommendationAppState extends State<RecommendationApp> with SingleTicker
   void initState() {
     super.initState();
     controller = TabController(length: 2, vsync: this);
-    initializeDateFormatting('ko_KR', null);
   }
 
   @override
@@ -73,7 +72,6 @@ class _RecommendationAppState extends State<RecommendationApp> with SingleTicker
                     child: GestureDetector(
                       onTap: () {
                         FlutterPhoneDirectCaller.callNumber((restaurantList?[position].phone)!);
-                        print("Call");
                       },
                       child: Container(
                         width: queryData.size.width * 0.2,
