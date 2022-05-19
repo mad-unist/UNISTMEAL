@@ -51,6 +51,43 @@ class _BookmarkAppState extends State<BookmarkApp> with SingleTickerProviderStat
     });
   }
 
+  createAlertDialog(BuildContext context){
+    TextEditingController customController = TextEditingController();
+    return showDialog(context: context, builder: (context){
+      return AlertDialog(
+        title: Text("키워드 입력"),
+        content: TextField(
+          controller: customController,
+          decoration: InputDecoration(hintText: "Ex)돈까스, 피망"),
+        ),
+        actions: <Widget>[
+          MaterialButton(
+            child: Text('취소'),
+            onPressed: () {
+              Navigator.pop(context, "Cancel");
+            },
+          ),
+          MaterialButton(
+            child: Text('선호'),
+            onPressed: () {
+              Navigator.pop(context, customController.text);
+              goodList.add(customController.text);
+              setGoodList();
+            },
+          ),
+          MaterialButton(
+            child: Text('불호'),
+            onPressed: () {
+              Navigator.pop(context, customController.text);
+              badList.add(customController.text);
+              setBadList();
+            },
+          ),
+        ],
+      );
+    });
+  }
+
   void initState() {
     super.initState();
     controller = TabController(length: 2, vsync: this);
@@ -81,6 +118,12 @@ class _BookmarkAppState extends State<BookmarkApp> with SingleTickerProviderStat
             exampleListview(badList, Colors.pink[50]),
           ],
           controller: controller,
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            createAlertDialog(context);
+          },
+          child: Icon(Icons.add),
         ),
       ),
     );
