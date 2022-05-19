@@ -3,24 +3,32 @@ import 'package:flutter/widgets.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:unistapp/meal.dart';
+import 'package:unistapp/photo.dart';
 import 'package:photo_view/photo_view.dart';
 
 class MealPhotoApp extends StatefulWidget {
-  const MealPhotoApp({Key? key,}) : super(key: key);
+  final List<Photo>? list;
+  const MealPhotoApp({Key? key, this.list}) : super(key: key);
 
   @override
-  _MealPhotoAppState createState() => _MealPhotoAppState();
+  _MealPhotoAppState createState() => _MealPhotoAppState(list);
 }
 
 class _MealPhotoAppState extends State<MealPhotoApp> with SingleTickerProviderStateMixin{
   TabController? controller;
-  _MealPhotoAppState();
+  final List<Photo>? list;
+  _MealPhotoAppState(this.list);
+
   void initState() {
     super.initState();
     controller = TabController(length: 3, vsync: this);
   }
+
   @override
   Widget build(BuildContext context) {
+    print("PHOTO");
+    print(list);
+    print(list![0].url!);
     return MaterialApp(
         home: Scaffold(
             appBar: AppBar(
@@ -54,15 +62,15 @@ class _MealPhotoAppState extends State<MealPhotoApp> with SingleTickerProviderSt
                     physics: NeverScrollableScrollPhysics(),
                     children: [
                       PhotoView(
-                        imageProvider: NetworkImage('http://uspace.unist.ac.kr/Storage/Cabinet/Editor/0/1172/1220508162048079110/Content/2022051010070719481fc6-2f7b-4338-85c5-16397461db35.png'),
+                        imageProvider: NetworkImage(list![0].url!),
                         backgroundDecoration: BoxDecoration(color: Colors.transparent),
                       ),
                       PhotoView(
-                        imageProvider: NetworkImage('http://uspace.unist.ac.kr/Storage/Cabinet/Editor/0/1172/1220506175135938104/Content/2022050617511408dfb69a-302c-4bcf-89c2-f6161c39e893.jpg'),
+                        imageProvider: NetworkImage(list![1].url!),
                         backgroundDecoration: BoxDecoration(color: Colors.transparent),
                       ),
                       PhotoView(
-                        imageProvider: NetworkImage('http://uspace.unist.ac.kr/Storage/Cabinet/Editor/0/1172/1220506112846156088/Content/20220506113523a3c1dba1-353a-4297-af2a-ca12e7783e95.png'),
+                        imageProvider: NetworkImage(list![2].url!),
                         backgroundDecoration: BoxDecoration(color: Colors.transparent),
                       ),
                     ],

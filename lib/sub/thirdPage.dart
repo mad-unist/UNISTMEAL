@@ -32,6 +32,8 @@ class _RecommendationAppState extends State<RecommendationApp> with SingleTicker
 
   @override
   Widget build(BuildContext context) {
+    print("REST");
+    print(list);
     return Material(
       child: Scaffold(
         appBar: AppBar(
