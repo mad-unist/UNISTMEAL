@@ -25,12 +25,76 @@ class _BookmarkAppState extends State<BookmarkApp> with SingleTickerProviderStat
   List<String> badList = [];
   _BookmarkAppState();
 
+  void setGoodList() async{
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      prefs.setStringList("goodList", goodList);
+      print(prefs.getStringList("goodList")!);
+    });
+  }
+  void setBadList() async{
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      prefs.setStringList("badList", badList);
+    });
+  }
+  void getGoodList() async{
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      goodList = prefs.getStringList("goodList")!;
+    });
+  }
+  void getBadList() async{
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      badList = prefs.getStringList("badList")!;
+    });
+  }
+
+  createAlertDialog(BuildContext context){
+    TextEditingController customController = TextEditingController();
+    return showDialog(context: context, builder: (context){
+      return AlertDialog(
+        title: Text("키워드 입력"),
+        content: TextField(
+          controller: customController,
+          decoration: InputDecoration(hintText: "Ex)돈까스, 피망"),
+        ),
+        actions: <Widget>[
+          MaterialButton(
+            child: Text('취소'),
+            onPressed: () {
+              Navigator.pop(context, "Cancel");
+            },
+          ),
+          MaterialButton(
+            child: Text('선호'),
+            onPressed: () {
+              Navigator.pop(context, customController.text);
+              goodList.add(customController.text);
+              setGoodList();
+            },
+          ),
+          MaterialButton(
+            child: Text('불호'),
+            onPressed: () {
+              Navigator.pop(context, customController.text);
+              badList.add(customController.text);
+              setBadList();
+            },
+          ),
+        ],
+      );
+    });
+  }
+
   void initState() {
     super.initState();
     controller = TabController(length: 2, vsync: this);
-    goodList.add("돈까스");
-    goodList.add("피자");
-    badList.add("피망");
+    getGoodList();
+    getBadList();
+    goodList.add("우동");
+    setGoodList();
   }
 
   @override
@@ -55,6 +119,12 @@ class _BookmarkAppState extends State<BookmarkApp> with SingleTickerProviderStat
           ],
           controller: controller,
         ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            createAlertDialog(context);
+          },
+          child: Icon(Icons.add),
+        ),
       ),
     );
   }
@@ -75,7 +145,14 @@ class _BookmarkAppState extends State<BookmarkApp> with SingleTickerProviderStat
                     padding: EdgeInsets.fromLTRB(0.025 * queryData.size.width, 0, 0, 0),
                     child: GestureDetector(
                       onTap: () {
-
+                        if (col == Colors.lightGreen[50]){
+                          goodList.remove((bookmarkList?[position])!);
+                          setGoodList();
+                        }
+                        else {
+                          badList.remove((bookmarkList?[position])!);
+                          setBadList();
+                        }
                       },
                       child: Container(
                         width: queryData.size.width * 0.2,

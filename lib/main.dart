@@ -88,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     mealList.add(Meal(place: "교직원식당", type: "", time: "점심", content: "백반\n소고기국", month: 5, day: 19, calorie: 1100));
     mealList.add(Meal(place: "기숙사식당", type: "일품", time: "점심", content: "라면", month: 5, day: 19, calorie: 1100));
     mealList.add(Meal(place: "기숙사식당", type: "할랄", time: "점심", content: "샐러드", month: 5, day: 19, calorie: 1100));
-    mealList.add(Meal(place: "학생식당", type: "한식", time: "저녁", content: "돈까스", month: 5, day: 19, calorie: 1100));
+    mealList.add(Meal(place: "학생식당", type: "한식", time: "저녁", content: "치즈돈까스", month: 5, day: 19, calorie: 1100));
     mealList.add(Meal(place: "교직원식당", type: "", time: "저녁", content: "스테이크", month: 5, day: 19, calorie: 1100));
 
     // photo API 연동

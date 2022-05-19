@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:path/path.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:unistapp/meal.dart';
 import 'package:intl/intl.dart';
@@ -23,14 +24,31 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
   final pagecontroller = PageController();
   final List<Meal>? list;
   _MealAppState(this.list);
+  List<String> goodList = [];
+  List<String> badList = [];
+  void getGoodList() async{
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      goodList = prefs.getStringList("goodList")!;
+    });
+  }
+  void getBadList() async{
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      badList = prefs.getStringList("badList")!;
+    });
+  }
+
   void initState() {
     super.initState();
     controller = TabController(length: 3, vsync: this);
     initializeDateFormatting('ko_KR', null);
-
+    getGoodList();
+    getBadList();
   }
   @override
   Widget build(BuildContext context) {
+    print(goodList);
     var children = <Widget>[];
     for (var i = 0; i < 10; i++) {
       var d = DateTime.now().add(Duration(days: i));
@@ -120,7 +138,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30)
               ),
-              color: Colors.lightBlue[50],
+              color: goodList.any((element) => (glist?[position].content)!.contains(element)) ? Colors.lightGreen[50] : badList.any((element) => (glist?[position].content)!.contains(element)) ? Colors.pink[50] : Colors.lightBlue[50],
               child:  Stack(
                 children: <Widget>[
                   Container(
@@ -133,7 +151,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                             thickness: 2,
                             indent: 20,
                             endIndent: 20,
-                            color: Colors.lightBlue,
+                            color: goodList.any((element) => (glist?[position].content)!.contains(element)) ? Colors.lightGreen : badList.any((element) => (glist?[position].content)!.contains(element)) ? Colors.pink : Colors.lightBlue,
                           )
                         ],
                       ),
