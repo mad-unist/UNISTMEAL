@@ -77,6 +77,7 @@ class _RecommendationAppState extends State<RecommendationApp> with SingleTicker
                       },
                       child: Container(
                         width: queryData.size.width * 0.2,
+                        height: 0.1 * queryData.size.height,
                         decoration: BoxDecoration(
                             color: Colors.green,
                             borderRadius: BorderRadius.circular(20)

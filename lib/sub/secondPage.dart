@@ -28,7 +28,6 @@ class _MealPhotoAppState extends State<MealPhotoApp> with SingleTickerProviderSt
   Widget build(BuildContext context) {
     print("PHOTO");
     print(list);
-    print(list![0].url!);
     return MaterialApp(
         home: Scaffold(
             appBar: AppBar(
@@ -62,15 +61,15 @@ class _MealPhotoAppState extends State<MealPhotoApp> with SingleTickerProviderSt
                     physics: NeverScrollableScrollPhysics(),
                     children: [
                       PhotoView(
-                        imageProvider: NetworkImage(list![0].url!),
+                        imageProvider: list?.length != 0 ? NetworkImage((list?[0].url)!): Image.asset("assets/images/loading.gif").image,
                         backgroundDecoration: BoxDecoration(color: Colors.transparent),
                       ),
                       PhotoView(
-                        imageProvider: NetworkImage(list![1].url!),
+                        imageProvider: list?.length != 0 ? NetworkImage((list?[1].url)!): Image.asset("assets/images/loading.gif").image,
                         backgroundDecoration: BoxDecoration(color: Colors.transparent),
                       ),
                       PhotoView(
-                        imageProvider: NetworkImage(list![2].url!),
+                        imageProvider: list?.length != 0 ? NetworkImage((list?[2].url)!): Image.asset("assets/images/loading.gif").image,
                         backgroundDecoration: BoxDecoration(color: Colors.transparent),
                       ),
                     ],

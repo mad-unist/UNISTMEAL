@@ -20,8 +20,8 @@ class MealApp extends StatefulWidget {
 
 class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
   TabController? controller;
-  final ValueNotifier<int> _pageNotifier = new ValueNotifier<int>(0);
-  final pagecontroller = PageController();
+  ValueNotifier<int> _pageNotifier = new ValueNotifier<int>(0);
+  PageController pagecontroller = PageController();
   final List<Meal>? list;
   _MealAppState(this.list);
   List<String> goodList = [];
@@ -41,16 +41,15 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
 
   void initState() {
     super.initState();
-    controller = TabController(length: 3, vsync: this);
+    controller = TabController(initialIndex: 1, length: 3, vsync: this);
     initializeDateFormatting('ko_KR', null);
     getGoodList();
     getBadList();
   }
   @override
   Widget build(BuildContext context) {
-    print(goodList);
     var children = <Widget>[];
-    for (var i = 0; i < 10; i++) {
+    for (var i = 0; i < 9; i++) {
       var d = DateTime.now().add(Duration(days: i));
       children.add(exampleTabView(d.month, d.day , DateFormat.E('ko_KR').format(d)));
     }
