@@ -63,24 +63,31 @@ class _BookmarkAppState extends State<BookmarkApp> with SingleTickerProviderStat
         actions: <Widget>[
           MaterialButton(
             child: Text('취소'),
+            minWidth: 0.3,
             onPressed: () {
               Navigator.pop(context, "Cancel");
             },
           ),
           MaterialButton(
             child: Text('선호'),
+            minWidth: 0.3,
             onPressed: () {
               Navigator.pop(context, customController.text);
-              goodList.add(customController.text);
-              setGoodList();
+              if(customController.text.isNotEmpty) {
+                goodList.add(customController.text);
+                setGoodList();
+              }
             },
           ),
           MaterialButton(
             child: Text('불호'),
+            minWidth: 0.3,
             onPressed: () {
               Navigator.pop(context, customController.text);
-              badList.add(customController.text);
-              setBadList();
+              if(customController.text.isNotEmpty) {
+                badList.add(customController.text);
+                setBadList();
+              }
             },
           ),
         ],
@@ -156,6 +163,7 @@ class _BookmarkAppState extends State<BookmarkApp> with SingleTickerProviderStat
                       },
                       child: Container(
                         width: queryData.size.width * 0.2,
+                        height: 0.1 * queryData.size.height,
                         decoration: BoxDecoration(
                             color: Colors.grey[700],
                             borderRadius: BorderRadius.circular(20)
