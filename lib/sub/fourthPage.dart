@@ -141,6 +141,7 @@ class _BookmarkAppState extends State<BookmarkApp> with SingleTickerProviderStat
       child: ListView.builder(
         itemBuilder: (context, position) {
           MediaQueryData queryData = MediaQuery.of(context);
+          double unitHeightValue = MediaQuery.of(context).size.height * 0.01;
           return Container(
             alignment: Alignment.center,
             child: Slidable(
@@ -186,7 +187,7 @@ class _BookmarkAppState extends State<BookmarkApp> with SingleTickerProviderStat
                   alignment: Alignment.center,
                   height: 0.1 * queryData.size.height,
                   width: 0.98 * queryData.size.width,
-                  child: Text((bookmarkList?[position])!, textAlign: TextAlign.center,),
+                  child: Text((bookmarkList?[position])!, textAlign: TextAlign.center, style: TextStyle(fontSize: 2.5 * unitHeightValue,),),
                 ),
               ),
             ),

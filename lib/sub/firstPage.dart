@@ -51,7 +51,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
     var children = <Widget>[];
     for (var i = 0; i < 9; i++) {
       var d = DateTime.now().add(Duration(days: i));
-      children.add(exampleTabView(d.month, d.day , DateFormat.E('ko_KR').format(d)));
+      children.add(exampleTabView(d.month, d.day , DateFormat.E('ko_KR').format(d), context));
     }
     return Material(
       child: Scaffold(
@@ -91,12 +91,14 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
       ),
     );
   }
-  Widget exampleTabView(month, day, korday) {
+  Widget exampleTabView(month, day, korday, context) {
+    double unitHeightValue = MediaQuery.of(context).size.height * 0.01;
+    double multiplier = 3;
     List<Meal>? newlist = list?.where((data) => data.month == month && data.day == day).toList();
     return Scaffold(
       body: Column(
         children: [
-          Text('${month}월 ${day}일 (${korday})', textAlign: TextAlign.center, style: TextStyle(fontSize: 30)),
+          Text('${month}월 ${day}일 (${korday})', textAlign: TextAlign.center, style: TextStyle(fontSize: multiplier * unitHeightValue)),
           Expanded(
             child: Scaffold(
               appBar: AppBar(
@@ -132,6 +134,8 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
         primary: true,
         shrinkWrap: true,
         itemBuilder: (context, position) {
+          double unitHeightValue = MediaQuery.of(context).size.height * 0.01;
+          double multiplier = 1.8;
           return Container(
             child: Card(
               shape: RoundedRectangleBorder(
@@ -145,7 +149,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                       alignment: Alignment.topCenter,
                       child: Column(
                         children: [
-                          Text('  ${glist?[position].place}  ${glist?[position].type}', textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold),),
+                          Text('  ${glist?[position].place}  ${glist?[position].type}', textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 2 * unitHeightValue,),),
                           Divider(
                             thickness: 2,
                             indent: 20,
@@ -160,14 +164,14 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                   Container(
                     child: Align(
                       alignment: Alignment.center,
-                      child: Text((glist?[position].content)!, textAlign: TextAlign.center, style: TextStyle(height: 2,),),
+                      child: Text((glist?[position].content)!, textAlign: TextAlign.center, style: TextStyle(height: 1.5, fontSize: multiplier * unitHeightValue,),),
                     ),
                     padding: EdgeInsets.only(top: 5,),
                   ),
                   Container(
                     child: Align(
                       alignment: Alignment.bottomCenter,
-                      child: Text('${glist![position].calorie!}Kcal'),
+                      child: Text('${glist![position].calorie!}Kcal',  style: TextStyle(height: 2, fontSize: multiplier * unitHeightValue,),),
                     ),
                     padding: EdgeInsets.only(bottom: 10,),
                   ),
