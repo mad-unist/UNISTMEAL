@@ -115,9 +115,9 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
               body: TabBarView(
                 physics: NeverScrollableScrollPhysics(),
                 children: [
-                  exampleGridview(newlist?.where((data) => data.time == "아침").toList()),
-                  exampleGridview(newlist?.where((data) => data.time == "점심").toList()),
-                  exampleGridview(newlist?.where((data) => data.time == "저녁").toList()),
+                  exampleGridview(newlist?.where((data) => data.time == "아침").toList(), context),
+                  exampleGridview(newlist?.where((data) => data.time == "점심").toList(), context),
+                  exampleGridview(newlist?.where((data) => data.time == "저녁").toList(), context),
                 ],
                 controller: controller,
               ),
@@ -128,7 +128,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
     );
   }
 
-  exampleGridview(List<Meal>? glist) {
+  exampleGridview(List<Meal>? glist, context) {
     return Container(
       child: GridView.builder(
         primary: true,
@@ -182,11 +182,11 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
           );
         },
         itemCount: glist!.length,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2, //1 개의 행에 보여줄 item 개수
           childAspectRatio: 1 / 1.5, //item 의 가로 1, 세로 2 의 비율
-          mainAxisSpacing: 10, //수평 Padding
-          crossAxisSpacing: 10, //수직 Padding
+          mainAxisSpacing: 0.01 * MediaQuery.of(context).size.width, //수평 Padding
+          crossAxisSpacing: 0.01 * MediaQuery.of(context).size.width, //수직 Padding
         ),
       ),
     );
