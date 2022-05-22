@@ -111,12 +111,12 @@ class _RecommendationAppState extends State<RecommendationApp> with SingleTicker
                               children: [
                                 Container(
                                   child: Text((restaurantList?[position].name)!, textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold, fontSize: multiplier * uniWidthValue,),),
-                                  padding: EdgeInsets.fromLTRB(0.1 * queryData.size.width, 0, 0, 0),
+                                  padding: EdgeInsets.fromLTRB(0.1 * queryData.size.width, 0.02 * queryData.size.width, 0, 0),
                                 ),
                                 Spacer(),
                                 Container(
                                   child: Text((restaurantList?[position].place)!, textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold, fontSize: multiplier * uniWidthValue,),),
-                                  padding: EdgeInsets.fromLTRB(0, 0, 0.1 * queryData.size.width, 0),
+                                  padding: EdgeInsets.fromLTRB(0, 0.02 * queryData.size.width, 0.1 * queryData.size.width, 0),
                                 ),
                               ],
                             ),
