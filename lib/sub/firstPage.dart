@@ -135,7 +135,8 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
         shrinkWrap: true,
         itemBuilder: (context, position) {
           double unitHeightValue = MediaQuery.of(context).size.height * 0.01;
-          double multiplier = 1.8;
+          double uniWidthValue = MediaQuery.of(context).size.width * 0.01;
+          double multiplier = 3.5;
           return Container(
             child: Card(
               shape: RoundedRectangleBorder(
@@ -149,7 +150,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                       alignment: Alignment.topCenter,
                       child: Column(
                         children: [
-                          Text('  ${glist?[position].place}  ${glist?[position].type}', textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 2 * unitHeightValue,),),
+                          Text('  ${glist?[position].place}  ${glist?[position].type}', textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 4 * uniWidthValue,),),
                           Divider(
                             thickness: 2,
                             indent: 20,
@@ -164,14 +165,14 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                   Container(
                     child: Align(
                       alignment: Alignment.center,
-                      child: Text((glist?[position].content)!, textAlign: TextAlign.center, style: TextStyle(height: 1.5, fontSize: multiplier * unitHeightValue,),),
+                      child: Text((glist?[position].content)!, textAlign: TextAlign.center, style: TextStyle(height: 1.5, fontSize: multiplier * uniWidthValue,),),
                     ),
                     padding: EdgeInsets.only(top: 5,),
                   ),
                   Container(
                     child: Align(
                       alignment: Alignment.bottomCenter,
-                      child: Text('${glist![position].calorie!}Kcal',  style: TextStyle(height: 2, fontSize: multiplier * unitHeightValue,),),
+                      child: Text('${glist![position].calorie!}Kcal',  style: TextStyle(fontSize: multiplier * uniWidthValue,),),
                     ),
                     padding: EdgeInsets.only(bottom: 10,),
                   ),

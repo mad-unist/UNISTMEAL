@@ -64,9 +64,10 @@ class _RecommendationAppState extends State<RecommendationApp> with SingleTicker
         itemBuilder: (context, position) {
           MediaQueryData queryData = MediaQuery.of(context);
           double unitHeightValue = MediaQuery.of(context).size.height * 0.01;
-          double multiplier = 2;
+          double uniWidthValue = MediaQuery.of(context).size.width * 0.01;
+          double multiplier = 3.5;
           return Container(
-            height: 0.15 * queryData.size.height,
+            height: 0.3 * queryData.size.width,
             child: Slidable(
               endActionPane: ActionPane(
                 extentRatio: 0.25,
@@ -80,7 +81,7 @@ class _RecommendationAppState extends State<RecommendationApp> with SingleTicker
                       },
                       child: Container(
                         width: queryData.size.width * 0.2,
-                        height: 0.12 * queryData.size.height,
+                        height: 0.2 * queryData.size.width,
                         decoration: BoxDecoration(
                             color: Colors.green,
                             borderRadius: BorderRadius.circular(20)
@@ -109,12 +110,12 @@ class _RecommendationAppState extends State<RecommendationApp> with SingleTicker
                             Row(
                               children: [
                                 Container(
-                                  child: Text((restaurantList?[position].name)!, textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold, fontSize: multiplier * unitHeightValue,),),
+                                  child: Text((restaurantList?[position].name)!, textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold, fontSize: multiplier * uniWidthValue,),),
                                   padding: EdgeInsets.fromLTRB(0.1 * queryData.size.width, 0, 0, 0),
                                 ),
                                 Spacer(),
                                 Container(
-                                  child: Text((restaurantList?[position].place)!, textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold),),
+                                  child: Text((restaurantList?[position].place)!, textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold, fontSize: multiplier * uniWidthValue,),),
                                   padding: EdgeInsets.fromLTRB(0, 0, 0.1 * queryData.size.width, 0),
                                 ),
                               ],
@@ -131,7 +132,7 @@ class _RecommendationAppState extends State<RecommendationApp> with SingleTicker
                     ),
                     Container(
                       alignment: Alignment.centerLeft,
-                      child: Text("${(restaurantList?[position].content)!}\n${(restaurantList?[position].phone)!}", textAlign: TextAlign.left, style: TextStyle(height: 2, fontSize: multiplier * unitHeightValue,),),
+                      child: Text("${(restaurantList?[position].content)!}\n${(restaurantList?[position].phone)!}", textAlign: TextAlign.left, style: TextStyle(height: 2, fontSize: multiplier * uniWidthValue,),),
                       padding: EdgeInsets.fromLTRB(0.05 * queryData.size.width, 0, 0, 0),
                     ),
                   ],
