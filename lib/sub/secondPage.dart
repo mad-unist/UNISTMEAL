@@ -5,7 +5,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:unistapp/meal.dart';
 import 'package:unistapp/photo.dart';
 import 'package:photo_view/photo_view.dart';
-
+import 'dart:ui';
 class MealPhotoApp extends StatefulWidget {
   final List<Photo>? list;
   const MealPhotoApp({Key? key, this.list}) : super(key: key);
@@ -26,27 +26,14 @@ class _MealPhotoAppState extends State<MealPhotoApp> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
-    print("PHOTO");
-    print(list);
-    return MaterialApp(
-        home: Scaffold(
-            appBar: AppBar(
-              title: const Text('식단표 사진'),
-            ),
-            body: Container(
-              child: PhotoTabView(),
-            )
-        )
-    );
-  }
-
-  Widget PhotoTabView() {
     return Scaffold(
       body: Column(
         children: [
           Expanded(
+            child: Material(
               child: Scaffold(
                   appBar: AppBar(
+                    title: Text('식단표 사진'),
                     bottom: TabBar(
                       tabs: const [
                         Tab(text: '기숙사 식당',),
@@ -55,7 +42,6 @@ class _MealPhotoAppState extends State<MealPhotoApp> with SingleTickerProviderSt
                       ],
                       controller: controller,
                     ),
-                    toolbarHeight: 0,
                   ),
                   body: TabBarView(
                     physics: NeverScrollableScrollPhysics(),
@@ -75,7 +61,8 @@ class _MealPhotoAppState extends State<MealPhotoApp> with SingleTickerProviderSt
                     ],
                     controller: controller,
                   )
-              )
+              ),
+            ),
           ),
         ],
       ),

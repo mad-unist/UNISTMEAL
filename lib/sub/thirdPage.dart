@@ -32,8 +32,6 @@ class _RecommendationAppState extends State<RecommendationApp> with SingleTicker
 
   @override
   Widget build(BuildContext context) {
-    print("REST");
-    print(list);
     return Material(
       child: Scaffold(
         appBar: AppBar(
@@ -65,7 +63,7 @@ class _RecommendationAppState extends State<RecommendationApp> with SingleTicker
           MediaQueryData queryData = MediaQuery.of(context);
           double unitHeightValue = MediaQuery.of(context).size.height * 0.01;
           double uniWidthValue = MediaQuery.of(context).size.width * 0.01;
-          double multiplier = 3.5;
+          double multiplier = 4;
           return Container(
             height: 0.3 * queryData.size.width,
             child: Slidable(

@@ -9,13 +9,15 @@ import 'package:http/http.dart' as http;
 import 'package:unistapp/sub/fourthPage.dart';
 import 'dart:convert';
 import 'dart:async';
-
+import 'package:google_fonts/google_fonts.dart';
 import 'package:unistapp/sub/secondPage.dart';
 import 'package:unistapp/sub/thirdPage.dart';
 
 void main() {
   runApp(const MyApp());
 }
+
+Color? seedColor = Colors.blue[500];
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -24,6 +26,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      builder: (context, child) {
+        return MediaQuery(
+          child: child!,
+          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+        );
+      },
       title: 'Flutter Demo',
       theme: ThemeData(
         // This is the theme of your application.
@@ -35,7 +43,15 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.blue,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: seedColor!,
+          brightness: Brightness.light,
+        ),
+        textTheme: GoogleFonts.notoSansNKoTextTheme(
+          Theme.of(context).textTheme
+        ),
+        scaffoldBackgroundColor: Colors.lightBlue[10],
+
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
@@ -135,10 +151,10 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
         ),
         bottomNavigationBar: TabBar(
           tabs: <Tab>[
-            Tab(icon: Icon(Icons.home, color: Colors.blue),) ,
-            Tab(icon: Icon(Icons.image, color: Colors.blue),),
-            Tab(icon: Icon(Icons.contact_phone, color: Colors.blue),),
-            Tab(icon: Icon(Icons.star, color: Colors.blue),)
+            Tab(icon: Icon(Icons.home, color: Theme.of(context).colorScheme.primary),) ,
+            Tab(icon: Icon(Icons.image, color: Theme.of(context).colorScheme.primary),),
+            Tab(icon: Icon(Icons.contact_phone, color: Theme.of(context).colorScheme.primary),),
+            Tab(icon: Icon(Icons.star, color: Theme.of(context).colorScheme.primary),)
           ], controller: controller,
         )
     );

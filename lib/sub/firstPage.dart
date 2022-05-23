@@ -174,7 +174,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                       alignment: Alignment.bottomCenter,
                       child: Text('${glist![position].calorie!}Kcal',  style: TextStyle(fontSize: multiplier * uniWidthValue,),),
                     ),
-                    padding: EdgeInsets.only(bottom: 10,),
+                    padding: EdgeInsets.only(bottom: 1.5 * uniWidthValue,),
                   ),
                 ],
               ),
