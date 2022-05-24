@@ -24,6 +24,9 @@ class _RecommendationAppState extends State<RecommendationApp> with SingleTicker
   TabController? controller;
   final List<Restaurant>? list;
   _RecommendationAppState(this.list);
+  List<Restaurant>? listSearch;
+  final FocusNode _textFocusNode = FocusNode();
+  TextEditingController? _textEditingController = TextEditingController();
 
   void initState() {
     super.initState();
@@ -31,11 +34,61 @@ class _RecommendationAppState extends State<RecommendationApp> with SingleTicker
   }
 
   @override
+  void dispose() {
+    _textFocusNode.dispose();
+    _textEditingController!.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    _textEditingController!.text.isNotEmpty
+        ? listSearch
+        : listSearch = List.from(list!);
     return Material(
       child: Scaffold(
         appBar: AppBar(
-          title: Text('유니스트 추천 맛집'),
+          title: Container(
+            decoration: BoxDecoration(
+                color: Colors.blue.shade200,
+                borderRadius: BorderRadius.circular(20)),
+            child: TextField(
+              controller: _textEditingController,
+              focusNode: _textFocusNode,
+              cursorColor: Colors.black,
+              decoration: InputDecoration(
+                  border: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  errorBorder: InputBorder.none,
+                  disabledBorder: InputBorder.none,
+                  hintText: '유니스트 맛집 검색',
+                  contentPadding: EdgeInsets.all(8)),
+              onChanged: (value) {
+                setState(() {
+                  listSearch = list?.where((element) => (element.name! + element.content! + element.place! + element.phone!).contains(value.toLowerCase())).toList();
+                  if (_textEditingController!.text.isNotEmpty &&
+                      listSearch!.length == 0) {
+                    print('foodListSearch length ${listSearch!.length}');
+                  }
+                });
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                _textEditingController!.clear();
+                setState(() {
+                  _textEditingController!.text = '';
+                });
+              },
+              child: Icon(
+                Icons.close_sharp,
+                color: Theme.of(context).colorScheme.onPrimary
+              ),
+            ),
+          ],
           bottom: TabBar(
             tabs: const [
               Tab(text: '홀',),
@@ -47,8 +100,8 @@ class _RecommendationAppState extends State<RecommendationApp> with SingleTicker
         body: TabBarView(
           physics: NeverScrollableScrollPhysics(),
           children: [
-            exampleListview(list?.where((data) => data.type == "홀").toList()),
-            exampleListview(list?.where((data) => data.type == "배달").toList()),
+            exampleListview(listSearch?.where((data) => data.type == "홀").toList()),
+            exampleListview(listSearch?.where((data) => data.type == "배달").toList()),
           ],
           controller: controller,
         ),
@@ -65,7 +118,7 @@ class _RecommendationAppState extends State<RecommendationApp> with SingleTicker
           double uniWidthValue = MediaQuery.of(context).size.width * 0.01;
           double multiplier = 4;
           return Container(
-            height: 0.3 * queryData.size.width,
+            height: 0.35 * queryData.size.width,
             child: Slidable(
               endActionPane: ActionPane(
                 extentRatio: 0.25,
