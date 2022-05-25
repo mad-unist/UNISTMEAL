@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:unistapp/meal.dart';
 import 'package:unistapp/restaurant.dart';
@@ -13,7 +13,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:unistapp/sub/secondPage.dart';
 import 'package:unistapp/sub/thirdPage.dart';
 
+
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown
+  ]);
   runApp(const MyApp());
 }
 
