@@ -9,6 +9,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:unistapp/meal.dart';
 import 'package:intl/intl.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class MealApp extends StatefulWidget {
   final List<Meal>? list;
@@ -26,6 +27,8 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
   _MealAppState(this.list);
   List<String> goodList = [];
   List<String> badList = [];
+  List<String> prefList = ["기숙사식당", "학생식당","교직원식당"];
+  List<Meal>? sortList = [];
   void getGoodList() async{
     final prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -38,6 +41,18 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
       badList = prefs.getStringList("badList")!;
     });
   }
+  void getPrefList() async{
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      prefList = prefs.getStringList("prefList")!;
+    });
+  }
+  void setPrefList(setList) async{
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      prefs.setStringList("prefList", setList);
+    });
+  }
 
   void initState() {
     super.initState();
@@ -45,7 +60,95 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
     initializeDateFormatting('ko_KR', null);
     getGoodList();
     getBadList();
+    getPrefList();
   }
+
+  createAlertDialog(BuildContext context){
+    List<String> tempList = [];
+    bool _dormitory = false;
+    bool _student = false;
+    bool _employee = false;
+    return showDialog(context: context, builder: (context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: Text("선호도 입력"),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                SwitchListTile(
+                  title: Text("기숙사식당"),
+                  value: _dormitory,
+                  onChanged: (value) {
+                    setState(() {
+                      _dormitory = value;
+                      if (_dormitory) {
+                        tempList.add("기숙사식당");
+                      } else {
+                        tempList.remove("기숙사식당");
+                      }
+                    });
+                  },
+                ),
+                SwitchListTile(
+                  title: Text("학생식당"),
+                  value: _student,
+                  onChanged: (value) {
+                    setState(() {
+                      _student = value;
+                      if (_student) {
+                        tempList.add("학생식당");
+                      } else {
+                        tempList.remove("학생식당");
+                      }
+                    });
+                  },
+                ),
+                SwitchListTile(
+                  title: Text("교직원식당"),
+                  value: _employee,
+                  onChanged: (value) {
+                    setState(() {
+                      _employee = value;
+                      if (_employee) {
+                        tempList.add("교직원식당");
+                      } else {
+                        tempList.remove("교직원식당");
+                      }
+                    });
+                  },
+                ),
+                tempList.isNotEmpty ?
+                    tempList.length == 1 ?
+                        Text('${tempList.join(",\n")}\n 만 표시됩니다.', softWrap: true, textAlign: TextAlign.center,)
+                        :Text('${tempList.join(",\n")}\n 순으로 정렬됩니다.', softWrap: true, textAlign: TextAlign.center,)
+                    : Text("정렬을 원하는 것만\n순서대로 선택해주세요.", softWrap: true, textAlign: TextAlign.center,)
+              ],
+            ),
+            actions: [
+              MaterialButton(
+                child: Text('취소'),
+                minWidth: 0.3,
+                onPressed: () {
+                  Navigator.pop(context, "Cancel");
+                },
+              ),
+              MaterialButton(
+                child: Text('확인'),
+                minWidth: 0.3,
+                onPressed: () {
+                  Navigator.pop(context, "confirm");
+                  setPrefList(tempList);
+                  getPrefList();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     var children = <Widget>[];
@@ -57,6 +160,17 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
       child: Scaffold(
         appBar: AppBar(
           title: Text('유니스트 식단표'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                createAlertDialog(context);
+              },
+              child: FaIcon(
+                FontAwesomeIcons.rankingStar,
+                color: Theme.of(context).colorScheme.onPrimary
+              ),
+            ),
+          ],
         ),
         body: Column(
           children: [
@@ -92,9 +206,11 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
     );
   }
   Widget exampleTabView(month, day, korday, context) {
+    sortList = list?.where((element) => prefList.contains(element.place)).toList();
+    sortList?.sort((a, b) => prefList.indexOf(a.place!).compareTo(prefList.indexOf(b.place!)));
     double unitHeightValue = MediaQuery.of(context).size.height * 0.01;
     double multiplier = 3;
-    List<Meal>? newlist = list?.where((data) => data.month == month && data.day == day).toList();
+    List<Meal>? newlist = sortList?.where((data) => data.month == month && data.day == day).toList();
     return Scaffold(
       body: Column(
         children: [
