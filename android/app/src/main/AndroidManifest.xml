@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.unistapp">
    <application
-        android:label="unistapp"
+        android:label="밥먹어유"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
