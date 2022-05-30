@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:unistapp/meal.dart';
 import 'package:unistapp/photo.dart';
 import 'package:photo_view/photo_view.dart';
 import 'dart:ui';

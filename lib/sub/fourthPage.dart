@@ -2,15 +2,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:intl/date_symbol_data_local.dart';
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:unistapp/meal.dart';
-import 'package:intl/intl.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:provider/provider.dart';
 
 class BookmarkApp extends StatefulWidget {
   const BookmarkApp({Key? key,}) : super(key: key);
@@ -29,7 +22,6 @@ class _BookmarkAppState extends State<BookmarkApp> with SingleTickerProviderStat
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       prefs.setStringList("goodList", goodList);
-      print(prefs.getStringList("goodList")!);
     });
   }
   void setBadList() async{
@@ -100,7 +92,6 @@ class _BookmarkAppState extends State<BookmarkApp> with SingleTickerProviderStat
     controller = TabController(length: 2, vsync: this);
     getGoodList();
     getBadList();
-    goodList.add("우동");
     setGoodList();
   }
 

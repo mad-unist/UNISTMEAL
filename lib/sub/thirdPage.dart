@@ -2,12 +2,6 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:intl/date_symbol_data_local.dart';
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:unistapp/meal.dart';
-import 'package:intl/intl.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:unistapp/restaurant.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
@@ -100,8 +94,8 @@ class _RecommendationAppState extends State<RecommendationApp> with SingleTicker
         body: TabBarView(
           physics: NeverScrollableScrollPhysics(),
           children: [
-            exampleListview(listSearch?.where((data) => data.type == "홀").toList()),
-            exampleListview(listSearch?.where((data) => data.type == "배달").toList()),
+            exampleListview(listSearch?.where((data) => data.type!.contains("홀")).toList()),
+            exampleListview(listSearch?.where((data) => data.type!.contains("배달")).toList()),
           ],
           controller: controller,
         ),
