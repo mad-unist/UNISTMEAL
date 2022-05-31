@@ -60,7 +60,6 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
       var d = DateTime.now().add(Duration(days: i));
       pageList.add(d);
     }
-    print(pageList);
     getGoodList();
     getBadList();
     getPrefList();
