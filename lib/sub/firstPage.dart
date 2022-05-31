@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unistapp/meal.dart';
 import 'package:intl/intl.dart';
@@ -19,14 +18,16 @@ class MealApp extends StatefulWidget {
 
 class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
   TabController? controller;
-  ValueNotifier<int> _pageNotifier = new ValueNotifier<int>(0);
+  ValueNotifier<int> _pageNotifier = new ValueNotifier<int>(1);
   PageController pagecontroller = PageController();
   final List<Meal>? list;
-  _MealAppState(this.list);
   List<String> goodList = [];
   List<String> badList = [];
   List<String> prefList = ["기숙사식당", "학생식당","교직원식당"];
   List<Meal>? sortList = [];
+  List pageList = [];
+  _MealAppState(this.list);
+
   void getGoodList() async{
     final prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -55,13 +56,17 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
   void initState() {
     super.initState();
     controller = TabController(initialIndex: 1, length: 3, vsync: this);
-    initializeDateFormatting('ko_KR', null);
+    for (var i = 0; i < 9; i++) {
+      var d = DateTime.now().add(Duration(days: i));
+      pageList.add(d);
+    }
+    print(pageList);
     getGoodList();
     getBadList();
     getPrefList();
   }
 
-  createAlertDialog(BuildContext context){
+    createAlertDialog(BuildContext context){
     List<String> tempList = [];
     bool _dormitory = false;
     bool _student = false;
@@ -117,9 +122,9 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                   },
                 ),
                 tempList.isNotEmpty ?
-                    tempList.length == 1 ?
-                        Text('${tempList.join(",\n")}\n 만 표시됩니다.', softWrap: true, textAlign: TextAlign.center,)
-                        :Text('${tempList.join(",\n")}\n 순으로 정렬됩니다.', softWrap: true, textAlign: TextAlign.center,)
+                tempList.length == 1 ?
+                Text('${tempList.join(",\n")}\n 만 표시됩니다.', softWrap: true, textAlign: TextAlign.center,)
+                    :Text('${tempList.join(",\n")}\n 순으로 정렬됩니다.', softWrap: true, textAlign: TextAlign.center,)
                     : Text("정렬을 원하는 것만\n순서대로 선택해주세요.", softWrap: true, textAlign: TextAlign.center,)
               ],
             ),
@@ -149,61 +154,92 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
 
   @override
   Widget build(BuildContext context) {
-    var children = <Widget>[];
-    for (var i = 0; i < 9; i++) {
-      var d = DateTime.now().add(Duration(days: i));
-      children.add(exampleTabView(d.month, d.day , DateFormat.E('ko_KR').format(d), context));
-    }
-    return Material(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('유니스트 식단표'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                createAlertDialog(context);
-              },
-              child: FaIcon(
-                FontAwesomeIcons.rankingStar,
-                color: Theme.of(context).colorScheme.onPrimary
-              ),
-            ),
-          ],
-        ),
-        body: Column(
-          children: [
-            Expanded(
-              child: PageView(
-                children: children,
-                controller: pagecontroller,
-                onPageChanged: (index){
-                  setState(() {
-                    _pageNotifier.value = index;
-                  });
-                },
-              ),
-            ),
-            SmoothPageIndicator(
-              controller: pagecontroller,
-              count:  9,
-              effect:  WormEffect(
-                dotHeight: 15,
-                dotWidth: 15,
-                spacing: 15,
-              ),
-              onDotClicked: (index){
-                setState(() {
-                  _pageNotifier.value = index;
-                  pagecontroller.animateToPage(index, duration: Duration(milliseconds: 500), curve: Curves.ease);
-                });
-              },
+    return FutureBuilder<double>(
+        future: tillGetSource(
+            Stream<double>.periodic(
+                Duration(milliseconds: 100),
+                    (x) => MediaQuery.of(context).size.height
             )
-          ],
         ),
-      ),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return Material(
+              child: Scaffold(
+                appBar: AppBar(
+                  title: Text('유니스트 식단표'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        createAlertDialog(context);
+                      },
+                      child: FaIcon(
+                          FontAwesomeIcons.rankingStar,
+                          color: Theme.of(context).colorScheme.onPrimary
+                      ),
+                    ),
+                  ],
+                ),
+                body: Column(
+                  children: [
+                    Expanded(
+                        child: PageView.builder(
+                          controller: pagecontroller,
+                          itemCount: pageList.length,
+                          itemBuilder: (context, position) {
+                            return exampleTabView(pageList[position].month, pageList[position].day, DateFormat.E('ko_KR').format(pageList[position]), context);
+                          },
+                          onPageChanged: (index){
+                            setState(() {
+                              _pageNotifier.value = index;
+                            });
+                          },
+                        )
+                    ),
+                    SmoothPageIndicator(
+                      controller: pagecontroller,
+                      count:  9,
+                      effect:  WormEffect(
+                        dotHeight: 15,
+                        dotWidth: 15,
+                        spacing: 15,
+                      ),
+                      onDotClicked: (index){
+                        setState(() {
+                          _pageNotifier.value = index;
+                          pagecontroller.animateToPage(index, duration: Duration(milliseconds: 500), curve: Curves.ease);
+                        });
+                      },
+                    )
+                  ],
+                ),
+              ),
+            );
+          } else {
+            return Material(
+              child: Scaffold(
+                appBar: AppBar(
+                  title: Text('유니스트 식단표'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                      createAlertDialog(context);
+                      },
+                      child: FaIcon(
+                      FontAwesomeIcons.rankingStar,
+                      color: Theme.of(context).colorScheme.onPrimary
+                      ),
+                    ),
+                  ],
+                ),
+                body: Container(),
+              ),
+            );
+          }
+        }
     );
   }
-  Widget exampleTabView(month, day, korday, context) {
+
+  exampleTabView(month, day, korday, context) {
     sortList = list?.where((element) => prefList.contains(element.place)).toList();
     sortList?.sort((a, b) => prefList.indexOf(a.place!).compareTo(prefList.indexOf(b.place!)));
     double unitHeightValue = MediaQuery.of(context).size.height * 0.01;
@@ -240,6 +276,14 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
         ],
       ),
     );
+  }
+
+  Future<double> tillGetSource(Stream<double> source) async{
+    await for (double value in source){
+      if(value > 0)
+        return value;
+    }
+    return await tillGetSource(source);
   }
 
   exampleGridview(List<Meal>? glist, context) {
@@ -305,6 +349,5 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
       ),
     );
   }
-
 
 }

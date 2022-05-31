@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:unistapp/meal.dart';
 import 'package:unistapp/restaurant.dart';
 import 'package:unistapp/photo.dart';
@@ -20,6 +21,7 @@ void main() {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown
   ]);
+  initializeDateFormatting('ko_KR', null);
   runApp(const MyApp());
 }
 
