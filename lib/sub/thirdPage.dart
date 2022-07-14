@@ -2,9 +2,11 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:unistapp/restaurant.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
+import 'package:unistapp/sub/detailMenu.dart';
 
 class RecommendationApp extends StatefulWidget {
   final List<Restaurant>? list;
@@ -21,6 +23,7 @@ class _RecommendationAppState extends State<RecommendationApp> with SingleTicker
   List<Restaurant>? listSearch;
   final FocusNode _textFocusNode = FocusNode();
   TextEditingController? _textEditingController = TextEditingController();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   void initState() {
     super.initState();
@@ -41,6 +44,7 @@ class _RecommendationAppState extends State<RecommendationApp> with SingleTicker
         : listSearch = List.from(list!);
     return Material(
       child: Scaffold(
+        key: _scaffoldKey,
         appBar: AppBar(
           title: Container(
             decoration: BoxDecoration(
@@ -114,6 +118,32 @@ class _RecommendationAppState extends State<RecommendationApp> with SingleTicker
           return Container(
             height: 0.35 * queryData.size.width,
             child: Slidable(
+              startActionPane: ActionPane(
+                extentRatio: 0.25,
+                motion: ScrollMotion(),
+                children: [
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(0.025 * queryData.size.width, 0, 0, 0),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(builder: (context)=> detailMenu(shopName: restaurantList![position])));
+                      },
+                      child: Container(
+                        width: queryData.size.width * 0.2,
+                        height: 0.2 * queryData.size.width,
+                        decoration: BoxDecoration(
+                            color: Colors.yellow,
+                            borderRadius: BorderRadius.circular(20)
+                        ),
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Icon(Icons.restaurant_menu, color: Colors.white,),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               endActionPane: ActionPane(
                 extentRatio: 0.25,
                 motion: ScrollMotion(),
