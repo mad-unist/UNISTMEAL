@@ -34,7 +34,7 @@ dependencies:
   intl: ^0.17.0
   http: ^0.13.3
   smooth_page_indicator: ^1.0.0+2
-  photo_view: ^0.13.0
+  photo_view: ^0.14.0
   flutter_slidable: ^1.2.1
   flutter_phone_direct_caller: ^2.1.1
   shared_preferences: ^2.0.15

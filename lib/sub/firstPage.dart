@@ -65,7 +65,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
     getPrefList();
   }
 
-    createAlertDialog(BuildContext context){
+  createAlertDialog(BuildContext context){
     List<String> tempList = [];
     bool _dormitory = false;
     bool _student = false;
