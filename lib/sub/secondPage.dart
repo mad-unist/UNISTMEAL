@@ -44,16 +44,22 @@ class _MealPhotoAppState extends State<MealPhotoApp> with SingleTickerProviderSt
                     physics: NeverScrollableScrollPhysics(),
                     children: [
                       PhotoView(
-                        imageProvider: list?.length != 0 ? NetworkImage((list?[0].url)!): Image.asset("assets/images/loading.gif").image,
+                        imageProvider: list?.length != 0 ? NetworkImage(list!.firstWhere((element) => element.name == "기숙사식당").url!): Image.asset("assets/images/loading.gif").image,
                         backgroundDecoration: BoxDecoration(color: Colors.transparent),
+                        minScale: PhotoViewComputedScale.contained * 0.6,
+                        maxScale: PhotoViewComputedScale.covered * 4,
                       ),
                       PhotoView(
-                        imageProvider: list?.length != 0 ? NetworkImage((list?[1].url)!): Image.asset("assets/images/loading.gif").image,
+                        imageProvider: list?.length != 0 ? NetworkImage(list!.firstWhere((element) => element.name == "학생식당").url!): Image.asset("assets/images/loading.gif").image,
                         backgroundDecoration: BoxDecoration(color: Colors.transparent),
+                        minScale: PhotoViewComputedScale.contained * 0.6,
+                        maxScale: PhotoViewComputedScale.covered * 4,
                       ),
                       PhotoView(
-                        imageProvider: list?.length != 0 ? NetworkImage((list?[2].url)!): Image.asset("assets/images/loading.gif").image,
+                        imageProvider: list?.length != 0 ? NetworkImage(list!.firstWhere((element) => element.name == "교직원식당").url!): Image.asset("assets/images/loading.gif").image,
                         backgroundDecoration: BoxDecoration(color: Colors.transparent),
+                        minScale: PhotoViewComputedScale.contained * 0.6,
+                        maxScale: PhotoViewComputedScale.covered * 4,
                       ),
                     ],
                     controller: controller,
