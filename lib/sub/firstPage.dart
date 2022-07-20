@@ -7,6 +7,7 @@ import 'package:unistapp/meal.dart';
 import 'package:intl/intl.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:unistapp/sub/sideBar.dart';
 
 class MealApp extends StatefulWidget {
   final List<Meal>? list;
@@ -164,6 +165,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
           if (snapshot.hasData) {
             return Material(
               child: Scaffold(
+                drawer: SideBarApp(),
                 appBar: AppBar(
                   title: Text('유니스트 식단표'),
                   actions: [
