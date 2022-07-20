@@ -13,7 +13,7 @@ import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:unistapp/sub/secondPage.dart';
 import 'package:unistapp/sub/thirdPage.dart';
-
+import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,6 +22,7 @@ void main() {
     DeviceOrientation.portraitDown
   ]);
   initializeDateFormatting('ko_KR', null);
+  KakaoSdk.init(nativeAppKey: '1fdb8c2a87d39a7446137dc2963ee6a4');
   runApp(const MyApp());
 }
 
