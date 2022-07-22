@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unistapp/kakaoLogin.dart';
 import 'package:unistapp/sub/loginViewModel.dart';
 
@@ -13,8 +14,11 @@ class SideBarApp extends StatefulWidget {
 
 class _SideBarAppState extends State<SideBarApp> {
   final viewModel = loginViewModel(KakaoLogin());
+  String profileUrl = '';
+
   void initState() {
     super.initState();
+    getProfileUrl();
     _loginCheck();
   }
 
@@ -23,6 +27,20 @@ class _SideBarAppState extends State<SideBarApp> {
       await viewModel.loginCheck();
       setState(() {});
     }
+  }
+
+  void getProfileUrl() async{
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      profileUrl = prefs.getString("profileUrl")!;
+    });
+  }
+
+  void setProfileUrl() async{
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      prefs.setString("profileUrl", profileUrl);
+    });
   }
 
   @override
@@ -36,7 +54,7 @@ class _SideBarAppState extends State<SideBarApp> {
             currentAccountPicture: CircleAvatar(
               child: ClipOval(
                 child: CachedNetworkImage(
-                  imageUrl: viewModel.user?.kakaoAccount?.profile?.profileImageUrl ?? '',
+                  imageUrl: viewModel.user?.kakaoAccount?.profile?.profileImageUrl ?? profileUrl,
                     placeholder: (context, url) => new CircularProgressIndicator(),
                     errorWidget: (context, url, error) => new Icon(Icons.error),
                   fit: BoxFit.cover,
@@ -53,19 +71,25 @@ class _SideBarAppState extends State<SideBarApp> {
               ),
             ),
           ),
-          if (viewModel.user == null) IconButton(
+          if (profileUrl == '') IconButton(
               icon: Image.asset("assets/images/kakao_login_medium_narrow.png"),
               iconSize: 50,
               onPressed: () async{
                 await viewModel.login();
-                setState(() {});
+                setState(() {
+                  profileUrl = (viewModel.user?.kakaoAccount?.profile?.profileImageUrl)!;
+                  setProfileUrl();
+                });
               },
             ) else ListTile(
               leading: Icon(Icons.logout),
               title: Text('로그아웃'),
               onTap: () async{
                 await viewModel.logout();
-                setState(() {});
+                setState(() {
+                  profileUrl = '';
+                  setProfileUrl();
+                });
               },
             ),
           ListTile(
