@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unistapp/kakaoLogin.dart';
 import 'package:unistapp/sub/loginViewModel.dart';
 
@@ -13,8 +14,11 @@ class SideBarApp extends StatefulWidget {
 
 class _SideBarAppState extends State<SideBarApp> {
   final viewModel = loginViewModel(KakaoLogin());
+  List<String> profileUrl = ['','카카오 로그인이 필요합니다','이메일 정보가 없습니다'];
+
   void initState() {
     super.initState();
+    getProfileUrl();
     _loginCheck();
   }
 
@@ -25,18 +29,32 @@ class _SideBarAppState extends State<SideBarApp> {
     }
   }
 
+  void getProfileUrl() async{
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      profileUrl = prefs.getStringList("profileUrl")!;
+    });
+  }
+
+  void setProfileUrl() async{
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      prefs.setStringList("profileUrl", profileUrl);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
         children: [
           UserAccountsDrawerHeader(
-            accountName: Text(viewModel.user?.kakaoAccount?.profile?.nickname ?? '카카오 로그인이 필요합니다.'),
-            accountEmail: Text(viewModel.user?.kakaoAccount?.email ?? '이메일 정보가 없습니다.'),
+            accountName: Text(viewModel.user?.kakaoAccount?.profile?.nickname ?? profileUrl[1]),
+            accountEmail: Text(viewModel.user?.kakaoAccount?.email ?? profileUrl[2]),
             currentAccountPicture: CircleAvatar(
               child: ClipOval(
                 child: CachedNetworkImage(
-                  imageUrl: viewModel.user?.kakaoAccount?.profile?.profileImageUrl ?? '',
+                  imageUrl: viewModel.user?.kakaoAccount?.profile?.profileImageUrl ?? profileUrl[0],
                     placeholder: (context, url) => new CircularProgressIndicator(),
                     errorWidget: (context, url, error) => new Icon(Icons.error),
                   fit: BoxFit.cover,
@@ -53,19 +71,25 @@ class _SideBarAppState extends State<SideBarApp> {
               ),
             ),
           ),
-          if (viewModel.user == null) IconButton(
+          if (profileUrl[0] == '') IconButton(
               icon: Image.asset("assets/images/kakao_login_medium_narrow.png"),
               iconSize: 50,
               onPressed: () async{
                 await viewModel.login();
-                setState(() {});
+                setState(() {
+                  profileUrl = [(viewModel.user?.kakaoAccount?.profile?.profileImageUrl)!, (viewModel.user?.kakaoAccount?.profile?.nickname)!, viewModel.user?.kakaoAccount?.email ?? '이메일 정보가 없습니다'];
+                  setProfileUrl();
+                });
               },
             ) else ListTile(
               leading: Icon(Icons.logout),
               title: Text('로그아웃'),
               onTap: () async{
                 await viewModel.logout();
-                setState(() {});
+                setState(() {
+                  profileUrl = ['','카카오 로그인이 필요합니다','이메일 정보가 없습니다'];
+                  setProfileUrl();
+                });
               },
             ),
           ListTile(
