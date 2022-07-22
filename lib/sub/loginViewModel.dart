@@ -6,7 +6,7 @@ class loginViewModel {
   final SocialLogin _socialLogin;
   bool isLogined = false;
   User? user;
-  List<String> profileUrl = ['','카카오로그인이 필요합니다','이메일 정보가 없습니다'];
+  List<String> profileUrl = ['','카카오 로그인이 필요합니다','이메일 정보가 없습니다'];
   loginViewModel(this._socialLogin);
 
   void getProfileUrl() async{
