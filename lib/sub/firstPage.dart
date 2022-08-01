@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unistapp/meal.dart';
@@ -380,7 +381,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
       context: context,
       builder: (BuildContext context) {
         return SimpleDialog(
-          title:  Text("식단표 행동 선택"),
+          title:  Text("일일 식단표 행동 선택", textAlign: TextAlign.center,),
           children: [
             ListTile(
               leading: Icon(Icons.share),
@@ -394,6 +395,9 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
               leading: Icon(Icons.copy),
               title: Text('복사하기'),
               onTap: () {
+                Clipboard.setData(ClipboardData(
+                  text: '${element.place} ${element.type} ${element.month}/${element.day} (${koreanDay})\n\n${element.content}',
+                ));
                 Navigator.pop(context, "Cancel");
               },
             ),
