@@ -1,7 +1,5 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unistapp/meal.dart';
 import 'package:intl/intl.dart';
@@ -54,6 +52,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
     });
   }
 
+  @override
   void initState() {
     super.initState();
     controller = TabController(initialIndex: 1, length: 3, vsync: this);
@@ -240,7 +239,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
     );
   }
 
-  exampleTabView(month, day, korday, context) {
+  exampleTabView(month, day, koreanDay, context) {
     sortList = list?.where((element) => prefList.contains(element.place)).toList();
     sortList?.sort((a, b) => prefList.indexOf(a.place!).compareTo(prefList.indexOf(b.place!)));
     double unitHeightValue = MediaQuery.of(context).size.height * 0.01;
@@ -249,7 +248,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
     return Scaffold(
       body: Column(
         children: [
-          Text('${month}월 ${day}일 (${korday})', textAlign: TextAlign.center, style: TextStyle(fontSize: multiplier * unitHeightValue)),
+          Text('${month}월 ${day}일 (${koreanDay})', textAlign: TextAlign.center, style: TextStyle(fontSize: multiplier * unitHeightValue)),
           Expanded(
             child: Scaffold(
               appBar: AppBar(
@@ -266,9 +265,9 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
               body: TabBarView(
                 physics: NeverScrollableScrollPhysics(),
                 children: [
-                  exampleGridview(newlist?.where((data) => data.time == "아침").toList(), context),
-                  exampleGridview(newlist?.where((data) => data.time == "점심").toList(), context),
-                  exampleGridview(newlist?.where((data) => data.time == "저녁").toList(), context),
+                  exampleGridview(newlist?.where((data) => data.time == "아침").toList(), koreanDay, context),
+                  exampleGridview(newlist?.where((data) => data.time == "점심").toList(), koreanDay, context),
+                  exampleGridview(newlist?.where((data) => data.time == "저녁").toList(), koreanDay, context),
                 ],
                 controller: controller,
               ),
@@ -287,55 +286,59 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
     return await tillGetSource(source);
   }
 
-  exampleGridview(List<Meal>? glist, context) {
+  exampleGridview(List<Meal>? glist, koreanDay, context) {
     return Container(
       child: GridView.builder(
         primary: true,
         shrinkWrap: true,
         itemBuilder: (context, position) {
-          double unitHeightValue = MediaQuery.of(context).size.height * 0.01;
           double uniWidthValue = MediaQuery.of(context).size.width * 0.01;
           double multiplier = 3.5;
           return Container(
-            child: Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30)
-              ),
-              color: goodList.any((element) => (glist?[position].content)!.contains(element)) ? Colors.lightGreen[50] : badList.any((element) => (glist?[position].content)!.contains(element)) ? Colors.pink[50] : Colors.lightBlue[50],
-              child:  Stack(
-                children: <Widget>[
-                  Container(
-                    child: Align(
-                      alignment: Alignment.topCenter,
-                      child: Column(
-                        children: [
-                          Text('  ${glist?[position].place}  ${glist?[position].type}', textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 4 * uniWidthValue,),),
-                          Divider(
-                            thickness: 2,
-                            indent: 20,
-                            endIndent: 20,
-                            color: goodList.any((element) => (glist?[position].content)!.contains(element)) ? Colors.lightGreen : badList.any((element) => (glist?[position].content)!.contains(element)) ? Colors.pink : Colors.lightBlue,
-                          )
-                        ],
+            child: GestureDetector(
+              onLongPress: () {
+                createPopupMenu(context, glist?[position], koreanDay);
+              },
+              child: Card(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30)
+                ),
+                color: goodList.any((element) => (glist?[position].content)!.contains(element)) ? Colors.lightGreen[50] : badList.any((element) => (glist?[position].content)!.contains(element)) ? Colors.pink[50] : Colors.lightBlue[50],
+                child:  Stack(
+                  children: <Widget>[
+                    Container(
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        child: Column(
+                          children: [
+                            Text('  ${glist?[position].place}  ${glist?[position].type}', textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 4 * uniWidthValue,),),
+                            Divider(
+                              thickness: 2,
+                              indent: 20,
+                              endIndent: 20,
+                              color: goodList.any((element) => (glist?[position].content)!.contains(element)) ? Colors.lightGreen : badList.any((element) => (glist?[position].content)!.contains(element)) ? Colors.pink : Colors.lightBlue,
+                            )
+                          ],
+                        ),
                       ),
+                      padding: EdgeInsets.only(top: 10, bottom: 5,),
                     ),
-                    padding: EdgeInsets.only(top: 10, bottom: 5,),
-                  ),
-                  Container(
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: Text((glist?[position].content)!, textAlign: TextAlign.center, style: TextStyle(height: 1.5, fontSize: multiplier * uniWidthValue,),),
+                    Container(
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text((glist?[position].content)!, textAlign: TextAlign.center, style: TextStyle(height: 1.5, fontSize: multiplier * uniWidthValue,),),
+                      ),
+                      padding: EdgeInsets.only(top: 5,),
                     ),
-                    padding: EdgeInsets.only(top: 5,),
-                  ),
-                  Container(
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Text('${glist![position].calorie!}Kcal',  style: TextStyle(fontSize: multiplier * uniWidthValue,),),
+                    Container(
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Text('${glist![position].calorie!}Kcal',  style: TextStyle(fontSize: multiplier * uniWidthValue,),),
+                      ),
+                      padding: EdgeInsets.only(bottom: 1.5 * uniWidthValue,),
                     ),
-                    padding: EdgeInsets.only(bottom: 1.5 * uniWidthValue,),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           );
@@ -348,6 +351,62 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
           crossAxisSpacing: 0.01 * MediaQuery.of(context).size.width, //수직 Padding
         ),
       ),
+    );
+  }
+
+  kakaoShare(element, koreanDay) async{
+    TextTemplate defaultText = TextTemplate(
+      text:
+      '${element.place} ${element.type} ${element.month}/${element.day} (${koreanDay})\n\n${element.content}',
+      link: Link(
+        androidExecutionParams: {'':''},
+        iosExecutionParams: {'':''},
+      ),
+      buttonTitle: '앱으로 보기',
+    );
+    bool result = await ShareClient.instance.isKakaoTalkSharingAvailable();
+    if (result) {
+      Uri uri =
+          await ShareClient.instance.shareDefault(template: defaultText);
+      await ShareClient.instance.launchKakaoTalk(uri);
+      print('카카오톡으로 공유 가능');
+    } else {
+      print('카카오톡 미설치: 웹 공유 기능 사용 권장');
+    }
+  }
+
+  createPopupMenu(BuildContext context, element, koreanDay) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title:  Text("식단표 행동 선택"),
+          children: [
+            ListTile(
+              leading: Icon(Icons.share),
+              title: Text('공유하기'),
+              onTap: () {
+                kakaoShare(element, koreanDay);
+                Navigator.pop(context, "Cancel");
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.copy),
+              title: Text('복사하기'),
+              onTap: () {
+                Navigator.pop(context, "Cancel");
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.star),
+              title: Text('평가하기'),
+              onTap: () {
+                Navigator.pop(context, "Cancel");
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
