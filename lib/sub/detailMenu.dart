@@ -16,6 +16,8 @@ class _detailMenuState extends State<detailMenu> {
   _detailMenuState(this.shopName);
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  List<String>? urlList = [];
+
   final imageList = [
     'assets/images/loading.gif',
     'assets/images/loading.png',
@@ -23,6 +25,8 @@ class _detailMenuState extends State<detailMenu> {
 
   void initState() {
     super.initState();
+    urlList = shopName.url;
+    print(urlList);
   }
 
   @override
@@ -43,11 +47,11 @@ class _detailMenuState extends State<detailMenu> {
         margin: EdgeInsets.only(left: 15, right: 15),
         width: MediaQuery.of(context).size.width,
         child: PhotoViewGallery.builder(
-          itemCount: imageList.length,
+          itemCount: urlList?.length,
           builder: (context, index) {
             return PhotoViewGalleryPageOptions(
-              imageProvider: AssetImage(
-                imageList[index],
+              imageProvider: NetworkImage(
+                urlList![index],
               ),
               minScale: PhotoViewComputedScale.contained * 0.8,
               maxScale: PhotoViewComputedScale.covered * 2,

@@ -5,8 +5,9 @@ class Restaurant{
   String? phone;
   String? content;
   int? id;
+  List<String>? url;
 
-  Restaurant({this.name, this.place, this.type, this.content, this.phone, this.id});
+  Restaurant({this.name, this.place, this.type, this.content, this.phone, this.id, this.url});
 
   Map<String, dynamic> toMap() {
     return {
@@ -16,6 +17,7 @@ class Restaurant{
       'type': type,
       'number': phone,
       'content': content,
+      'url': url,
     };
   }
   factory Restaurant.fromJson(Map<String, dynamic> json) {
@@ -25,7 +27,8 @@ class Restaurant{
         place: json['place'],
         type: json['type'],
         phone: json['phone'],
-        content: json['content']
+        content: json['content'],
+        url: json['url'].toString().isNotEmpty? json['url'].split(' ') : [],
     );
   }
 

@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:unistapp/restaurant.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -126,7 +127,19 @@ class _RecommendationAppState extends State<RecommendationApp> with SingleTicker
                     padding: EdgeInsets.fromLTRB(0.025 * queryData.size.width, 0, 0, 0),
                     child: GestureDetector(
                       onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(builder: (context)=> detailMenu(shopName: restaurantList![position])));
+                        if ((restaurantList?[position].url)!.isNotEmpty) {
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=> detailMenu(shopName: restaurantList![position])));
+                        } else {
+                          Fluttertoast.showToast(
+                              msg: "메뉴 사진이 존재하지 않습니다.",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIosWeb: 1,
+                              backgroundColor: Colors.redAccent,
+                              textColor: Colors.white,
+                              fontSize: 16.0
+                          );
+                        }
                       },
                       child: Container(
                         width: queryData.size.width * 0.2,
