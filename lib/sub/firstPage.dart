@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unistapp/meal.dart';
@@ -398,6 +399,15 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                 Clipboard.setData(ClipboardData(
                   text: '${element.place} ${element.type} ${element.month}/${element.day} (${koreanDay})\n\n${element.content}',
                 ));
+                Fluttertoast.showToast(
+                    msg: "클립보드 복사완료",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    timeInSecForIosWeb: 1,
+                    backgroundColor: Colors.redAccent,
+                    textColor: Colors.white,
+                    fontSize: 16.0
+                );
                 Navigator.pop(context, "Cancel");
               },
             ),
