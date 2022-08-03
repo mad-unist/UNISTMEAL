@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unistapp/kakaoLogin.dart';
 import 'package:unistapp/sub/loginViewModel.dart';
@@ -72,8 +73,11 @@ class _SideBarAppState extends State<SideBarApp> {
             ),
           ),
           if (profileUrl[0] == '') IconButton(
-              icon: Image.asset("assets/images/kakao_login_medium_narrow.png"),
-              iconSize: 50,
+              icon: Image.asset(
+                "assets/images/kakao_login_large_wide.png",
+                fit: BoxFit.cover,
+              ),
+              iconSize: 40,
               onPressed: () async{
                 await viewModel.login();
                 setState(() {
@@ -93,13 +97,28 @@ class _SideBarAppState extends State<SideBarApp> {
               },
             ),
           ListTile(
-            leading: Icon(Icons.share),
-            title: Text('Share'),
+            leading: Icon(Icons.info),
+            title: Text('버전 정보'),
+            onTap: () {
+              Fluttertoast.showToast(
+                  msg: "현재 버전:",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  timeInSecForIosWeb: 1,
+                  backgroundColor: Colors.redAccent,
+                  textColor: Colors.white,
+                  fontSize: MediaQuery.of(context).size.width * 0.04
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.feedback),
+            title: Text('문의하기'),
             onTap: () => null,
           ),
           ListTile(
-            leading: Icon(Icons.notifications),
-            title: Text('Request'),
+            leading: Icon(Icons.question_mark),
+            title: Text('튜토리얼'),
           ),
           Divider(),
           ListTile(

@@ -142,6 +142,28 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                 minWidth: 0.3,
                 onPressed: () {
                   Navigator.pop(context, "confirm");
+                  if (tempList.isEmpty) {
+                    tempList = ['기숙사식당', '교직원식당', '학생식당'];
+                    Fluttertoast.showToast(
+                        msg: "미선택으로 디폴트로 정렬됩니다.",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.redAccent,
+                        textColor: Colors.white,
+                        fontSize: MediaQuery.of(context).size.width * 0.04
+                    );
+                  } else {
+                    Fluttertoast.showToast(
+                        msg: "${tempList.join(", ")} 순 정렬완료",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.redAccent,
+                        textColor: Colors.white,
+                        fontSize: MediaQuery.of(context).size.width * 0.04
+                    );
+                  }
                   setPrefList(tempList);
                   getPrefList();
                 },
@@ -374,6 +396,15 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
       print('카카오톡으로 공유 가능');
     } else {
       print('카카오톡 미설치: 웹 공유 기능 사용 권장');
+      Fluttertoast.showToast(
+          msg: "카카오톡이 설치되어있지 않습니다",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.redAccent,
+          textColor: Colors.white,
+          fontSize: MediaQuery.of(context).size.width * 0.04
+      );
     }
   }
 
@@ -406,7 +437,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                     timeInSecForIosWeb: 1,
                     backgroundColor: Colors.redAccent,
                     textColor: Colors.white,
-                    fontSize: 16.0
+                    fontSize: MediaQuery.of(context).size.width * 0.04
                 );
                 Navigator.pop(context, "Cancel");
               },
