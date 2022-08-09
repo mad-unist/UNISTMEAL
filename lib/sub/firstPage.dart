@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -8,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:unistapp/sub/sideBar.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class MealApp extends StatefulWidget {
   final List<Meal>? list;
@@ -76,7 +79,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
       return StatefulBuilder(
         builder: (context, setState) {
           return AlertDialog(
-            title: Text("선호도 입력"),
+            title: Text("선호도 입력", textAlign: TextAlign.center,),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
@@ -226,6 +229,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                         dotHeight: 15,
                         dotWidth: 15,
                         spacing: 15,
+                        paintStyle: PaintingStyle.fill,
                       ),
                       onDotClicked: (index){
                         setState(() {
@@ -233,7 +237,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                           pagecontroller.animateToPage(index, duration: Duration(milliseconds: 500), curve: Curves.ease);
                         });
                       },
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -447,12 +451,68 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
               title: Text('평가하기'),
               onTap: () {
                 Navigator.pop(context, "Cancel");
+                createRatingDialog(context, element);
               },
             ),
           ],
         );
       },
     );
+  }
+
+  createRatingDialog(BuildContext context, element){
+    double rate = 3.0;
+    return showDialog(context: context, builder: (context)
+    {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: Text("식단 평가", textAlign: TextAlign.center,),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text("식단 평가는 한끼당 한개만 가능하며,\n여러개를 평가할 경우,\n 마지막 평가만 인정됩니다.", textAlign: TextAlign.center,),
+                RatingBar.builder(
+                  initialRating: 3,
+                  minRating: 1,
+                  direction: Axis.horizontal,
+                  allowHalfRating: true,
+                  itemCount: 5,
+                  itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+                  itemBuilder: (context, _) => Icon(
+                    Icons.star,
+                    color: Colors.amber,
+                  ),
+                  onRatingUpdate: (rating) {
+                    print(rating);
+                    setState(() {
+                      rate = rating;
+                    });
+                  },
+                ),
+                Text("${rate}", textAlign: TextAlign.center,),
+              ],
+            ),
+            actions: [
+              MaterialButton(
+                child: Text('취소'),
+                minWidth: 0.3,
+                onPressed: () {
+                  Navigator.pop(context, "Cancel");
+                },
+              ),
+              MaterialButton(
+                child: Text('평가하기'),
+                minWidth: 0.3,
+                onPressed: () {
+                  Navigator.pop(context, "Cancel");
+                },
+              ),
+            ],
+          );
+        },
+      );
+    });
   }
 
 }
