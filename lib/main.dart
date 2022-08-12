@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:new_version/new_version.dart';
 import 'package:unistapp/meal.dart';
 import 'package:unistapp/restaurant.dart';
 import 'package:unistapp/photo.dart';
@@ -93,6 +94,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   void initState() {
     super.initState();
     controller = TabController(length: 4, vsync: this);
+    _checkVersion();
     Future<String> fetchPost() async {
       final response = await http.get(Uri.parse('https://unist-meal-backend.herokuapp.com/menu/v1/menus?format=json'));
       setState(() {
@@ -151,6 +153,27 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
           ], controller: controller,
         )
     );
+  }
+
+  void _checkVersion() async {
+    final newVersion = NewVersion(
+      forceAppVersion: '3.0.0',
+      androidId: 'com.wjddnwls7879.unistbab',
+    );
+    final status=await newVersion.getVersionStatus();
+    print(status?.localVersion);
+    print(status?.storeVersion);
+    print(status?.appStoreLink);
+    if(status?.canUpdate==true){
+      newVersion.showUpdateDialog(
+        context: context,
+        versionStatus: status!,
+        dialogTitle: "업데이트 권장",
+        dialogText: "새로운 버전 ${status.storeVersion}이 출시되었습니다.\n 업데이트를 권장합니다.",
+        updateButtonText: "업데이트",
+        dismissButtonText: "나중에",
+      );
+    }
   }
 
   @override
