@@ -32,6 +32,7 @@ class loginViewModel {
     isLogined = await _socialLogin.login();
     if (isLogined) {
       user = await UserApi.instance.me();
+      print((user?.id)!);
       profileUrl = [(user?.kakaoAccount?.profile?.profileImageUrl)!, (user?.kakaoAccount?.profile?.nickname)!, user?.kakaoAccount?.email ?? '이메일 정보가 없습니다'];
       setProfileUrl();
     }

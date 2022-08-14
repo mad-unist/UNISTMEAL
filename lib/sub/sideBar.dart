@@ -2,20 +2,21 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:unistapp/kakaoLogin.dart';
 import 'package:unistapp/sub/loginViewModel.dart';
 
 class SideBarApp extends StatefulWidget {
-  const SideBarApp({Key? key}) : super(key: key);
-
+  final loginViewModel viewModel;
+  const SideBarApp({Key? key, required this.viewModel}) : super(key: key);
   @override
-  _SideBarAppState createState() => _SideBarAppState();
+  _SideBarAppState createState() => _SideBarAppState(viewModel);
 }
 
 
 class _SideBarAppState extends State<SideBarApp> {
-  final viewModel = loginViewModel(KakaoLogin());
+  final loginViewModel viewModel;
   List<String> profileUrl = ['','카카오 로그인이 필요합니다','이메일 정보가 없습니다'];
+
+  _SideBarAppState(this.viewModel);
 
   void initState() {
     super.initState();
