@@ -1,14 +1,17 @@
-import 'dart:ffi';
+import 'dart:convert';
 
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:unistapp/kakaoLogin.dart';
 import 'package:unistapp/meal.dart';
 import 'package:intl/intl.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:unistapp/sub/loginViewModel.dart';
 import 'package:unistapp/sub/sideBar.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
@@ -31,6 +34,8 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
   List<Meal>? sortList = [];
   List pageList = [];
   _MealAppState(this.list);
+  final viewModel = loginViewModel(KakaoLogin());
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   void getGoodList() async{
     final prefs = await SharedPreferences.getInstance();
@@ -57,9 +62,17 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
     });
   }
 
+  _loginCheck() async{
+    if (viewModel.user == null) {
+      await viewModel.loginCheck();
+      setState(() {});
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    _loginCheck();
     controller = TabController(initialIndex: 1, length: 3, vsync: this);
     for (var i = 0; i < 9; i++) {
       var d = DateTime.now().add(Duration(days: i));
@@ -191,7 +204,8 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
           if (snapshot.hasData) {
             return Material(
               child: Scaffold(
-                drawer: SideBarApp(),
+                key: _scaffoldKey,
+                drawer: SideBarApp(viewModel: viewModel,),
                 appBar: AppBar(
                   title: Text('유니스트 식단표'),
                   actions: [
@@ -505,7 +519,31 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                 child: Text('평가하기'),
                 minWidth: 0.3,
                 onPressed: () {
-                  Navigator.pop(context, "Cancel");
+                  if (viewModel.user != null){
+                    postRating(viewModel.user?.id, element.id, rate);
+                    Navigator.pop(context, "Cancel");
+                    Fluttertoast.showToast(
+                        msg: "평가 완료",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.redAccent,
+                        textColor: Colors.white,
+                        fontSize: MediaQuery.of(context).size.width * 0.04
+                    );
+                  } else {
+                    Fluttertoast.showToast(
+                        msg: "카카오 로그인을 먼저 해주세요",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.redAccent,
+                        textColor: Colors.white,
+                        fontSize: MediaQuery.of(context).size.width * 0.04
+                    );
+                    Navigator.pop(context, "Cancel");
+                    _scaffoldKey.currentState?.openDrawer();
+                  }
                 },
               ),
             ],
@@ -513,6 +551,20 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
         },
       );
     });
+  }
+
+  Future<http.Response> postRating(userId, mealId, rating) {
+    return http.post(
+      Uri.parse('https://jsonplaceholder.typicode.com/albums'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'userId': userId,
+        'mealID': mealId,
+        'rating': rating,
+      }),
+    );
   }
 
 }

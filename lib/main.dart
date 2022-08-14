@@ -157,7 +157,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 
   void _checkVersion() async {
     final newVersion = NewVersion(
-      forceAppVersion: '3.0.0',
+      forceAppVersion: '2.0.0',
       androidId: 'com.wjddnwls7879.unistbab',
     );
     final status=await newVersion.getVersionStatus();
