@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -27,8 +28,6 @@ void main() {
   runApp(const MyApp());
 }
 
-Color? seedColor = Colors.blue[500];
-
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -53,14 +52,11 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: seedColor!,
-          brightness: Brightness.light,
-        ),
+        primaryColor: Colors.blue[500],
         textTheme: GoogleFonts.notoSansNKoTextTheme(
           Theme.of(context).textTheme
         ),
-        scaffoldBackgroundColor: Colors.lightBlue[10],
+        scaffoldBackgroundColor: Colors.white,
 
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
@@ -86,14 +82,14 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin{
-  TabController? controller;
+  PageController _pageController = PageController();
   List<Meal> mealList = List.empty(growable: true);
   List<Photo> photoList = List.empty(growable: true);
   List<Restaurant> restList = List.empty(growable: true);
   @override
   void initState() {
     super.initState();
-    controller = TabController(length: 4, vsync: this);
+    _pageController = PageController();
     _checkVersion();
     Future<String> fetchPost() async {
       final response = await http.get(Uri.parse('https://unist-meal-backend.herokuapp.com/menu/v1/menus?format=json'));
@@ -135,23 +131,43 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     }
     fetchRestaurants();
   }
-
+  int _currentIndex = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: TabBarView(
+        body: PageView(
           physics: NeverScrollableScrollPhysics(),
+          onPageChanged: (index) {
+            setState(() => _currentIndex = index);
+          },
           children: <Widget>[MealApp(list:mealList), MealPhotoApp(list:photoList), RecommendationApp(list:restList), BookmarkApp()],
-          controller: controller,
+          controller: _pageController,
         ),
-        bottomNavigationBar: TabBar(
-          tabs: <Tab>[
-            Tab(icon: Icon(Icons.home, color: Theme.of(context).colorScheme.primary),) ,
-            Tab(icon: Icon(Icons.image, color: Theme.of(context).colorScheme.primary),),
-            Tab(icon: Icon(Icons.contact_phone, color: Theme.of(context).colorScheme.primary),),
-            Tab(icon: Icon(Icons.star, color: Theme.of(context).colorScheme.primary),)
-          ], controller: controller,
-        )
+        bottomNavigationBar: BottomNavyBar(
+          selectedIndex: _currentIndex,
+          onItemSelected: (index) {
+            setState(() => _currentIndex = index);
+            _pageController.jumpToPage(index);
+          },
+          items: <BottomNavyBarItem>[
+            BottomNavyBarItem(
+                title: Text('일일식단', textAlign: TextAlign.center,),
+                icon: Icon(Icons.home)
+            ),
+            BottomNavyBarItem(
+                title: Text('식단사진', textAlign: TextAlign.center,),
+                icon: Icon(Icons.image)
+            ),
+            BottomNavyBarItem(
+                title: Text('유니맛집', textAlign: TextAlign.center,),
+                icon: Icon(Icons.contact_phone)
+            ),
+            BottomNavyBarItem(
+                title: Text('즐겨찾기', textAlign: TextAlign.center,),
+                icon: Icon(Icons.star)
+            ),
+          ],
+        ),
     );
   }
 
@@ -178,7 +194,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
 
   @override
   void dispose() {
-    controller!.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 }
