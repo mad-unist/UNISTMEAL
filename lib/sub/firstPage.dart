@@ -220,14 +220,19 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                     ),
                   ],
                 ),
-                body: Column(
+                body: Stack(
+                  fit: StackFit.expand,
                   children: [
-                    Expanded(
+                    Container(
                         child: PageView.builder(
                           controller: pagecontroller,
                           itemCount: pageList.length,
                           itemBuilder: (context, position) {
-                            return exampleTabView(pageList[position].month, pageList[position].day, DateFormat.E('ko_KR').format(pageList[position]), context);
+                            if (position == 0) {
+                              return exampleTabView(pageList[position].month, pageList[position].day, DateFormat.E('ko_KR').format(pageList[position]), context, true);
+                            } else {
+                              return exampleTabView(pageList[position].month, pageList[position].day, DateFormat.E('ko_KR').format(pageList[position]), context, false);
+                            }
                           },
                           onPageChanged: (index){
                             setState(() {
@@ -236,21 +241,25 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                           },
                         )
                     ),
-                    SmoothPageIndicator(
-                      controller: pagecontroller,
-                      count:  9,
-                      effect:  WormEffect(
-                        dotHeight: 15,
-                        dotWidth: 15,
-                        spacing: 15,
-                        paintStyle: PaintingStyle.fill,
+                    Container(
+                      alignment: Alignment.bottomCenter,
+                      margin: EdgeInsets.only(bottom: 1.0 * MediaQuery.of(context).size.width * 0.015,),
+                      child: SmoothPageIndicator(
+                        controller: pagecontroller,
+                        count:  9,
+                        effect:  WormEffect(
+                          dotHeight: MediaQuery.of(context).size.width * 0.035,
+                          dotWidth: MediaQuery.of(context).size.width * 0.035,
+                          spacing: MediaQuery.of(context).size.width * 0.035,
+                          paintStyle: PaintingStyle.fill,
+                        ),
+                        onDotClicked: (index){
+                          setState(() {
+                            _pageNotifier.value = index;
+                            pagecontroller.animateToPage(index, duration: Duration(milliseconds: 500), curve: Curves.ease);
+                          });
+                        },
                       ),
-                      onDotClicked: (index){
-                        setState(() {
-                          _pageNotifier.value = index;
-                          pagecontroller.animateToPage(index, duration: Duration(milliseconds: 500), curve: Curves.ease);
-                        });
-                      },
                     ),
                   ],
                 ),
@@ -281,38 +290,63 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
     );
   }
 
-  exampleTabView(month, day, koreanDay, context) {
+  exampleTabView(month, day, koreanDay, context, boolToday) {
     sortList = list?.where((element) => prefList.contains(element.place)).toList();
     sortList?.sort((a, b) => prefList.indexOf(a.place!).compareTo(prefList.indexOf(b.place!)));
     double unitHeightValue = MediaQuery.of(context).size.height * 0.01;
+    double unitWidthValue = MediaQuery.of(context).size.width * 0.01;
     double multiplier = 3;
     List<Meal>? newlist = sortList?.where((data) => data.month == month && data.day == day).toList();
     return Scaffold(
       body: Column(
         children: [
-          Text('${month}월 ${day}일 (${koreanDay})', textAlign: TextAlign.center, style: TextStyle(fontSize: multiplier * unitHeightValue)),
+          Container(
+            child: Text('${month}월 ${day}일 (${koreanDay})', textAlign: TextAlign.center, style: TextStyle(fontSize: multiplier * unitHeightValue)),
+          ),
+          TabBar(
+            unselectedLabelColor: Colors.black,
+            labelColor: Colors.white,
+            automaticIndicatorColorAdjustment: true,
+            indicator: BoxDecoration(
+              color: Colors.blue[300],
+              borderRadius:  BorderRadius.circular(5 * unitWidthValue),
+              border: Border.all(
+                width: unitWidthValue,
+                color: Colors.blue,
+              ),
+            ),
+            indicatorSize: TabBarIndicatorSize.label,
+            tabs: [
+              Container(
+                width: unitWidthValue * 25,
+                child: Tab(text: '아침',),
+              ),
+              Container(
+                width: unitWidthValue * 25,
+                child: Tab(text: '점심',),
+              ),
+              Container(
+                width: unitWidthValue * 25,
+                child: Tab(text: '저녁',),
+              ),
+            ],
+            controller: controller,
+          ),
+          Divider(
+            thickness: 0.5 * unitWidthValue,
+            indent: 5 * unitWidthValue,
+            endIndent: 5 * unitWidthValue,
+            color: Colors.black,
+          ),
           Expanded(
-            child: Scaffold(
-              appBar: AppBar(
-                bottom: TabBar(
-                  tabs: const [
-                    Tab(text: '아침',),
-                    Tab(text: '점심',),
-                    Tab(text: '저녁',),
-                  ],
-                  controller: controller,
-                ),
-                toolbarHeight: 0,
-              ),
-              body: TabBarView(
-                physics: NeverScrollableScrollPhysics(),
-                children: [
-                  exampleGridview(newlist?.where((data) => data.time == "아침").toList(), koreanDay, context),
-                  exampleGridview(newlist?.where((data) => data.time == "점심").toList(), koreanDay, context),
-                  exampleGridview(newlist?.where((data) => data.time == "저녁").toList(), koreanDay, context),
-                ],
-                controller: controller,
-              ),
+            child: TabBarView(
+              physics: NeverScrollableScrollPhysics(),
+              children: [
+                exampleGridview(newlist?.where((data) => data.time == "아침").toList(), koreanDay, context, boolToday),
+                exampleGridview(newlist?.where((data) => data.time == "점심").toList(), koreanDay, context, boolToday),
+                exampleGridview(newlist?.where((data) => data.time == "저녁").toList(), koreanDay, context, boolToday),
+              ],
+              controller: controller,
             ),
           ),
         ],
@@ -328,58 +362,77 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
     return await tillGetSource(source);
   }
 
-  exampleGridview(List<Meal>? glist, koreanDay, context) {
+  exampleGridview(List<Meal>? glist, koreanDay, context, boolToday) {
     return Container(
       child: GridView.builder(
         primary: true,
         shrinkWrap: true,
         itemBuilder: (context, position) {
-          double uniWidthValue = MediaQuery.of(context).size.width * 0.01;
+          double unitWidthValue = MediaQuery.of(context).size.width * 0.01;
           double multiplier = 3.5;
           return Container(
             child: GestureDetector(
               onLongPress: () {
-                createPopupMenu(context, glist?[position], koreanDay);
+                createPopupMenu(context, glist?[position], koreanDay, boolToday);
               },
-              child: Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30)
-                ),
-                color: goodList.any((element) => (glist?[position].content)!.contains(element)) ? Colors.lightGreen[50] : badList.any((element) => (glist?[position].content)!.contains(element)) ? Colors.pink[50] : Colors.lightBlue[50],
-                child:  Stack(
-                  children: <Widget>[
-                    Container(
-                      child: Align(
-                        alignment: Alignment.topCenter,
-                        child: Column(
-                          children: [
-                            Text('  ${glist?[position].place}  ${glist?[position].type}', textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 4 * uniWidthValue,),),
-                            Divider(
-                              thickness: 2,
-                              indent: 20,
-                              endIndent: 20,
-                              color: goodList.any((element) => (glist?[position].content)!.contains(element)) ? Colors.lightGreen : badList.any((element) => (glist?[position].content)!.contains(element)) ? Colors.pink : Colors.lightBlue,
-                            )
-                          ],
+              child: Container(
+                margin: EdgeInsets.only(bottom: 1 * unitWidthValue,),
+                child: Card(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8 * unitWidthValue)
+                  ),
+                  color: goodList.any((element) => (glist?[position].content)!.contains(element)) ? Colors.lightGreen[50] : badList.any((element) => (glist?[position].content)!.contains(element)) ? Colors.pink[50] : Colors.lightBlue[50],
+                  child:  Stack(
+                    children: <Widget>[
+                      Container(
+                        child: Align(
+                          alignment: Alignment.topCenter,
+                          child: Column(
+                            children: [
+                              Text('  ${glist?[position].place}  ${glist?[position].type}', textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 4 * unitWidthValue,),),
+                              Divider(
+                                thickness: 0.5 * unitWidthValue,
+                                indent: 5 * unitWidthValue,
+                                endIndent: 5 * unitWidthValue,
+                                color: goodList.any((element) => (glist?[position].content)!.contains(element)) ? Colors.lightGreen : badList.any((element) => (glist?[position].content)!.contains(element)) ? Colors.pink : Colors.lightBlue,
+                              )
+                            ],
+                          ),
                         ),
+                        padding: EdgeInsets.only(top: 4 * unitWidthValue, bottom: 5 * unitWidthValue,),
                       ),
-                      padding: EdgeInsets.only(top: 10, bottom: 5,),
-                    ),
-                    Container(
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Text((glist?[position].content)!, textAlign: TextAlign.center, style: TextStyle(height: 1.5, fontSize: multiplier * uniWidthValue,),),
+                      Container(
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Text((glist?[position].content)!, textAlign: TextAlign.center, style: TextStyle(height: 1.5, fontSize: multiplier * unitWidthValue,),),
+                        ),
+                        padding: EdgeInsets.only(top: 2 * unitWidthValue,),
                       ),
-                      padding: EdgeInsets.only(top: 5,),
-                    ),
-                    Container(
-                      child: Align(
-                        alignment: Alignment.bottomCenter,
-                        child: Text('${glist![position].calorie!}Kcal',  style: TextStyle(fontSize: multiplier * uniWidthValue,),),
+                      boolToday? Container(
+                        child: Align(
+                          alignment: Alignment.bottomCenter,
+                          child: RatingBarIndicator(
+                            rating: (glist?[position].rating)!,
+                            itemBuilder: (context, index) => Icon(
+                              Icons.star,
+                              color: goodList.any((element) => (glist?[position].content)!.contains(element)) ? Colors.lightGreen : badList.any((element) => (glist?[position].content)!.contains(element)) ? Colors.pink : Colors.lightBlue,
+                            ),
+                            itemCount: 5,
+                            itemSize: unitWidthValue * 6,
+                            direction: Axis.horizontal,
+                          ),
+                        ),
+                        padding: EdgeInsets.only(bottom: 7 * unitWidthValue,),
+                      ) : Container(),
+                      Container(
+                        child: Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Text('${glist![position].calorie!}Kcal',  style: TextStyle(fontSize: multiplier * unitWidthValue,),),
+                        ),
+                        padding: EdgeInsets.only(bottom: 1.5 * unitWidthValue,),
                       ),
-                      padding: EdgeInsets.only(bottom: 1.5 * uniWidthValue,),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -388,7 +441,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
         itemCount: glist!.length,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2, //1 개의 행에 보여줄 item 개수
-          childAspectRatio: 1 / 1.5, //item 의 가로 1, 세로 2 의 비율
+          childAspectRatio: 1 / 1.6, //item 의 가로 1, 세로 2 의 비율
           mainAxisSpacing: 0.01 * MediaQuery.of(context).size.width, //수평 Padding
           crossAxisSpacing: 0.01 * MediaQuery.of(context).size.width, //수직 Padding
         ),
@@ -426,7 +479,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
     }
   }
 
-  createPopupMenu(BuildContext context, element, koreanDay) {
+  createPopupMenu(BuildContext context, element, koreanDay, boolToday) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -460,14 +513,14 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                 Navigator.pop(context, "Cancel");
               },
             ),
-            ListTile(
+            boolToday? ListTile(
               leading: Icon(Icons.star),
               title: Text('평가하기'),
               onTap: () {
                 Navigator.pop(context, "Cancel");
                 createRatingDialog(context, element);
               },
-            ),
+            ) : Container()
           ],
         );
       },
@@ -485,13 +538,14 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text("식단 평가는 한끼당 한개만 가능하며,\n여러개를 평가할 경우,\n 마지막 평가만 인정됩니다.", textAlign: TextAlign.center,),
+                Text("식단 평가는 한끼당 한개만 가능하며,\n여러개를 평가할 경우,\n 마지막 평가만 인정됩니다.", textAlign: TextAlign.center, style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.035,)),
                 RatingBar.builder(
                   initialRating: 3,
                   minRating: 1,
                   direction: Axis.horizontal,
                   allowHalfRating: true,
                   itemCount: 5,
+                  itemSize: MediaQuery.of(context).size.width * 0.09,
                   itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
                   itemBuilder: (context, _) => Icon(
                     Icons.star,
@@ -504,7 +558,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                     });
                   },
                 ),
-                Text("${rate}", textAlign: TextAlign.center,),
+                Text("${rate}", textAlign: TextAlign.center, style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.05,)),
               ],
             ),
             actions: [
@@ -553,16 +607,16 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
     });
   }
 
-  Future<http.Response> postRating(userId, mealId, rating) {
-    return http.post(
-      Uri.parse('https://jsonplaceholder.typicode.com/albums'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
+  Future<http.Response> postRating(userId, mealId, rating) async{
+    return await http.post(
+      Uri.parse('https://unist-meal-backend.herokuapp.com/rating/v1/ratings'),
+      headers:{
+        'Content-Type': "application/json",
       },
       body: jsonEncode(<String, dynamic>{
-        'userId': userId,
-        'mealID': mealId,
-        'rating': rating,
+        "user_id": "${userId}",
+        "menu_id": mealId,
+        "rating": rating
       }),
     );
   }

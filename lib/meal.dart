@@ -7,8 +7,9 @@ class Meal{
   int? month;
   int? day;
   int? id;
+  double? rating;
 
-  Meal({this.place, this.type, this.time, this.content, this.calorie, this.month, this.day, this.id});
+  Meal({this.place, this.type, this.time, this.content, this.calorie, this.month, this.day, this.id, this.rating});
 
   Map<String, dynamic> toMap() {
     return {
@@ -20,6 +21,7 @@ class Meal{
       'month': month,
       'day': day,
       'calorie': calorie,
+      'rating': rating,
     };
   }
   factory Meal.fromJson(Map<String, dynamic> json) {
@@ -31,7 +33,8 @@ class Meal{
       content: json['content'],
       calorie: json['calorie'],
       month: int.parse(json['date'].split('-')[1]),
-      day: int.parse(json['date'].split('-')[2].split('T')[0])
+      day: int.parse(json['date'].split('-')[2].split('T')[0]),
+      rating: json['rating'],
     );
   }
 
