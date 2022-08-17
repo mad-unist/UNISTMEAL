@@ -587,17 +587,43 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                 minWidth: 0.3,
                 onPressed: () {
                   if (viewModel.user != null){
-                    postRating(viewModel.user?.id, element.id, rate);
-                    Navigator.pop(context, "Cancel");
-                    Fluttertoast.showToast(
-                        msg: "평가 완료",
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.BOTTOM,
-                        timeInSecForIosWeb: 1,
-                        backgroundColor: Colors.redAccent,
-                        textColor: Colors.white,
-                        fontSize: MediaQuery.of(context).size.width * 0.04
-                    );
+                    int time = 480;
+                    switch (element.time) {
+                      case "아침":
+                        time = 480;
+                        break;
+                      case "점심":
+                        time = 660;
+                        break;
+                      case "저녁":
+                        time = 1020;
+                        break;
+                    }
+                    if ((DateTime.now().hour * 60 + DateTime.now().minute) > time) {
+                      postRating(viewModel.user?.id, element.id, rate);
+                      Navigator.pop(context, "Cancel");
+                      fetchToday();
+                      Fluttertoast.showToast(
+                          msg: "평가 완료",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: Colors.redAccent,
+                          textColor: Colors.white,
+                          fontSize: MediaQuery.of(context).size.width * 0.04
+                      );
+                    } else {
+                      Fluttertoast.showToast(
+                          msg: "식사 시간 ${(time/60).toInt()}시 이후 평가해주세요",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: Colors.redAccent,
+                          textColor: Colors.white,
+                          fontSize: MediaQuery.of(context).size.width * 0.04
+                      );
+                      Navigator.pop(context, "Cancel");
+                    }
                   } else {
                     Fluttertoast.showToast(
                         msg: "카카오 로그인을 먼저 해주세요",
