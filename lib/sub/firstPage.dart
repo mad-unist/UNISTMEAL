@@ -294,7 +294,13 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
 
   exampleTabView(month, day, koreanDay, context, boolToday) {
     sortList = list?.where((element) => prefList.contains(element.place)).toList();
-    sortList?.sort((a, b) => prefList.indexOf(a.place!).compareTo(prefList.indexOf(b.place!)));
+    sortList?.sort((a, b) {
+      if (prefList.indexOf(a.place!) == prefList.indexOf(b.place!)) {
+        return ["한식","일품"].indexOf(a.type!).compareTo(["한식","일품"].indexOf(b.type!));
+      } else {
+        return prefList.indexOf(a.place!).compareTo(prefList.indexOf(b.place!));
+      }
+    });
     double unitHeightValue = MediaQuery.of(context).size.height * 0.01;
     double unitWidthValue = MediaQuery.of(context).size.width * 0.01;
     double multiplier = 3;
