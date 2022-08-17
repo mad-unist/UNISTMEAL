@@ -69,7 +69,7 @@ class _SideBarAppState extends State<SideBarApp> {
               color: Colors.blue,
               image: DecorationImage(
                   fit: BoxFit.fill,
-                  image: NetworkImage('https://oflutter.com/wp-content/uploads/2021/02/profile-bg3.jpg')
+                  image: AssetImage("assets/images/sidebarpicture.png"),
               ),
             ),
           ),
@@ -99,10 +99,10 @@ class _SideBarAppState extends State<SideBarApp> {
             ),
           ListTile(
             leading: Icon(Icons.info),
-            title: Text('버전 정보'),
+            title: Text('앱 버전 정보'),
             onTap: () {
               Fluttertoast.showToast(
-                  msg: "현재 버전:",
+                  msg: "현재 버전: 2.0.0",
                   toastLength: Toast.LENGTH_SHORT,
                   gravity: ToastGravity.BOTTOM,
                   timeInSecForIosWeb: 1,
@@ -114,7 +114,7 @@ class _SideBarAppState extends State<SideBarApp> {
           ),
           ListTile(
             leading: Icon(Icons.feedback),
-            title: Text('문의하기'),
+            title: Text('개발자에게 문의하기'),
             onTap: () => null,
           ),
           ListTile(
