@@ -1,8 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:provider/provider.dart';
 
 class ListProvider with ChangeNotifier {
-  List<String> goodList = ["돈까스"];
+  List<String> goodList = [];
   List<String> badList = [];
 
   void addGood(String item){
