@@ -1,5 +1,6 @@
 import 'dart:convert';
-
+import 'package:easy_refresh/easy_refresh.dart';
+import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -33,6 +34,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
   List<String> prefList = ["기숙사식당", "학생식당","교직원식당"];
   List<Meal>? sortList = [];
   List pageList = [];
+  List<Meal> todayList = [];
   _MealAppState(this.list);
   final viewModel = loginViewModel(KakaoLogin());
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -362,88 +364,93 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
     return await tillGetSource(source);
   }
 
-  exampleGridview(List<Meal>? glist, koreanDay, context, boolToday) {
-    return Container(
-      child: GridView.builder(
-        primary: true,
-        shrinkWrap: true,
-        itemBuilder: (context, position) {
-          double unitWidthValue = MediaQuery.of(context).size.width * 0.01;
-          double multiplier = 3.5;
-          return Container(
-            child: GestureDetector(
-              onLongPress: () {
-                createPopupMenu(context, glist?[position], koreanDay, boolToday);
-              },
-              child: Container(
-                margin: EdgeInsets.only(bottom: 1 * unitWidthValue,),
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8 * unitWidthValue)
-                  ),
-                  color: goodList.any((element) => (glist?[position].content)!.contains(element)) ? Colors.lightGreen[50] : badList.any((element) => (glist?[position].content)!.contains(element)) ? Colors.pink[50] : Colors.lightBlue[50],
-                  child:  Stack(
-                    children: <Widget>[
-                      Container(
-                        child: Align(
-                          alignment: Alignment.topCenter,
-                          child: Column(
-                            children: [
-                              Text('  ${glist?[position].place}  ${glist?[position].type}', textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 4 * unitWidthValue,),),
-                              Divider(
-                                thickness: 0.5 * unitWidthValue,
-                                indent: 5 * unitWidthValue,
-                                endIndent: 5 * unitWidthValue,
-                                color: goodList.any((element) => (glist?[position].content)!.contains(element)) ? Colors.lightGreen : badList.any((element) => (glist?[position].content)!.contains(element)) ? Colors.pink : Colors.lightBlue,
-                              )
-                            ],
-                          ),
-                        ),
-                        padding: EdgeInsets.only(top: 4 * unitWidthValue, bottom: 5 * unitWidthValue,),
-                      ),
-                      Container(
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Text((glist?[position].content)!, textAlign: TextAlign.center, style: TextStyle(height: 1.5, fontSize: multiplier * unitWidthValue,),),
-                        ),
-                        padding: EdgeInsets.only(top: 2 * unitWidthValue,),
-                      ),
-                      boolToday? Container(
-                        child: Align(
-                          alignment: Alignment.bottomCenter,
-                          child: RatingBarIndicator(
-                            rating: (glist?[position].rating)!,
-                            itemBuilder: (context, index) => Icon(
-                              Icons.star,
-                              color: goodList.any((element) => (glist?[position].content)!.contains(element)) ? Colors.lightGreen : badList.any((element) => (glist?[position].content)!.contains(element)) ? Colors.pink : Colors.lightBlue,
+  exampleGridview(List<Meal>? gridList, koreanDay, context, boolToday) {
+    return SafeArea(
+      child: EasyRefresh(
+        callRefreshOverOffset: MediaQuery.of(context).size.height * 0.08,
+        onRefresh: () async {
+          fetchToday();
+        },
+        child: GridView.builder(
+          primary: true,
+          itemBuilder: (context, position) {
+            double unitWidthValue = MediaQuery.of(context).size.width * 0.01;
+            double multiplier = 3.5;
+            return Container(
+              child: GestureDetector(
+                onLongPress: () {
+                  createPopupMenu(context, gridList?[position], koreanDay, boolToday);
+                },
+                child: Container(
+                  margin: EdgeInsets.only(bottom: 1 * unitWidthValue,),
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8 * unitWidthValue)
+                    ),
+                    color: goodList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.lightGreen[50] : badList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.pink[50] : Colors.lightBlue[50],
+                    child:  Stack(
+                      children: <Widget>[
+                        Container(
+                          child: Align(
+                            alignment: Alignment.topCenter,
+                            child: Column(
+                              children: [
+                                Text('${gridList?[position].place}  ${gridList?[position].type}', textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 4 * unitWidthValue,),),
+                                Divider(
+                                  thickness: 0.5 * unitWidthValue,
+                                  indent: 5 * unitWidthValue,
+                                  endIndent: 5 * unitWidthValue,
+                                  color: goodList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.lightGreen : badList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.pink : Colors.lightBlue,
+                                )
+                              ],
                             ),
-                            itemCount: 5,
-                            itemSize: unitWidthValue * 6,
-                            direction: Axis.horizontal,
                           ),
+                          padding: EdgeInsets.only(top: 4 * unitWidthValue, bottom: 5 * unitWidthValue,),
                         ),
-                        padding: EdgeInsets.only(bottom: 7 * unitWidthValue,),
-                      ) : Container(),
-                      Container(
-                        child: Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Text('${glist![position].calorie!}Kcal',  style: TextStyle(fontSize: multiplier * unitWidthValue,),),
+                        Container(
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Text((gridList?[position].content)!, textAlign: TextAlign.center, style: TextStyle(height: 1.5, fontSize: multiplier * unitWidthValue,),),
+                          ),
+                          padding: EdgeInsets.only(top: 2 * unitWidthValue,),
                         ),
-                        padding: EdgeInsets.only(bottom: 1.5 * unitWidthValue,),
-                      ),
-                    ],
+                        boolToday? Container(
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: RatingBarIndicator(
+                              rating: (gridList?[position].rating)!,
+                              itemBuilder: (context, index) => Icon(
+                                Icons.star,
+                                color: goodList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.lightGreen : badList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.pink : Colors.lightBlue,
+                              ),
+                              itemCount: 5,
+                              itemSize: unitWidthValue * 6,
+                              direction: Axis.horizontal,
+                            ),
+                          ),
+                          padding: EdgeInsets.only(bottom: 7 * unitWidthValue,),
+                        ) : Container(),
+                        Container(
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Text('${gridList![position].calorie!}Kcal',  style: TextStyle(fontSize: multiplier * unitWidthValue,),),
+                          ),
+                          padding: EdgeInsets.only(bottom: 1.5 * unitWidthValue,),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          );
-        },
-        itemCount: glist!.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2, //1 개의 행에 보여줄 item 개수
-          childAspectRatio: 1 / 1.6, //item 의 가로 1, 세로 2 의 비율
-          mainAxisSpacing: 0.01 * MediaQuery.of(context).size.width, //수평 Padding
-          crossAxisSpacing: 0.01 * MediaQuery.of(context).size.width, //수직 Padding
+            );
+          },
+          itemCount: gridList!.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2, //1 개의 행에 보여줄 item 개수
+            childAspectRatio: 1 / 1.6, //item 의 가로 1, 세로 2 의 비율
+            mainAxisSpacing: 0.01 * MediaQuery.of(context).size.width, //수평 Padding
+            crossAxisSpacing: 0.01 * MediaQuery.of(context).size.width, //수직 Padding
+          ),
         ),
       ),
     );
@@ -619,6 +626,21 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
         "rating": rating
       }),
     );
+  }
+
+  Future<String> fetchToday() async {
+    final response = await http.get(Uri.parse('https://unist-meal-backend.herokuapp.com/menu/v1/today-menus?format=json'));
+    setState(() {
+      var _text = utf8.decode(response.bodyBytes);
+      var data = jsonDecode(_text)['data'] as List;
+      todayList.clear();
+      data.forEach((element) {
+        todayList.add(Meal.fromJson(element));
+      });
+      list?.removeWhere((data) => data.month == DateTime.now().month && data.day == DateTime.now().day);
+      list?.addAll(todayList);
+    });
+    return "Sucessful";
   }
 
 }
