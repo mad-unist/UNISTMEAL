@@ -8,8 +8,9 @@ class Meal{
   int? day;
   int? id;
   double? rating;
+  int? rating_count;
 
-  Meal({this.place, this.type, this.time, this.content, this.calorie, this.month, this.day, this.id, this.rating});
+  Meal({this.place, this.type, this.time, this.content, this.calorie, this.month, this.day, this.id, this.rating, this.rating_count});
 
   Map<String, dynamic> toMap() {
     return {
@@ -22,6 +23,7 @@ class Meal{
       'day': day,
       'calorie': calorie,
       'rating': rating,
+      'rating_count': rating_count,
     };
   }
   factory Meal.fromJson(Map<String, dynamic> json) {
@@ -35,6 +37,7 @@ class Meal{
       month: int.parse(json['date'].split('-')[1]),
       day: int.parse(json['date'].split('-')[2].split('T')[0]),
       rating: json['rating'],
+      rating_count: json['rating_count'],
     );
   }
 

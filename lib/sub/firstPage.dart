@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:easy_refresh/easy_refresh.dart';
-import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,10 +17,11 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class MealApp extends StatefulWidget {
   final List<Meal>? list;
-  const MealApp({Key? key, this.list}) : super(key: key);
+  List? pageList;
+  MealApp({Key? key, this.list, this.pageList}) : super(key: key);
 
   @override
-  _MealAppState createState() => _MealAppState(list);
+  _MealAppState createState() => _MealAppState(list, pageList!);
 }
 
 class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
@@ -35,7 +35,9 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
   List<Meal>? sortList = [];
   List pageList = [];
   List<Meal> todayList = [];
-  _MealAppState(this.list);
+  _MealAppState(this.list, this.pageList);
+  Map<String, dynamic> rateHistory = {};
+
   final viewModel = loginViewModel(KakaoLogin());
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -71,15 +73,21 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
     }
   }
 
+  createPage() {
+    pageList.clear();
+    for (var i = 0; i < 9; i++) {
+      var d = DateTime.now().add(Duration(days: i));
+      pageList.add(d);
+    }
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
     _loginCheck();
     controller = TabController(initialIndex: 1, length: 3, vsync: this);
-    for (var i = 0; i < 9; i++) {
-      var d = DateTime.now().add(Duration(days: i));
-      pageList.add(d);
-    }
+    createPage();
     getGoodList();
     getBadList();
     getPrefList();
@@ -375,13 +383,14 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
       child: EasyRefresh(
         callRefreshOverOffset: MediaQuery.of(context).size.height * 0.08,
         onRefresh: () async {
+          createPage();
           fetchToday();
         },
         child: GridView.builder(
           primary: true,
           itemBuilder: (context, position) {
             double unitWidthValue = MediaQuery.of(context).size.width * 0.01;
-            double multiplier = 3.5;
+            double multiplier = 3.3;
             return Container(
               child: GestureDetector(
                 onLongPress: () {
@@ -394,11 +403,9 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                         borderRadius: BorderRadius.circular(8 * unitWidthValue)
                     ),
                     color: goodList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.lightGreen[50] : badList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.pink[50] : Colors.lightBlue[50],
-                    child:  Stack(
+                    child:  Column(
                       children: <Widget>[
                         Container(
-                          child: Align(
-                            alignment: Alignment.topCenter,
                             child: Column(
                               children: [
                                 Text('${gridList?[position].place}  ${gridList?[position].type}', textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 4 * unitWidthValue,),),
@@ -407,41 +414,52 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                                   indent: 5 * unitWidthValue,
                                   endIndent: 5 * unitWidthValue,
                                   color: goodList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.lightGreen : badList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.pink : Colors.lightBlue,
-                                )
+                                ),
                               ],
                             ),
-                          ),
-                          padding: EdgeInsets.only(top: 4 * unitWidthValue, bottom: 5 * unitWidthValue,),
-                        ),
-                        Container(
-                          child: Align(
-                            alignment: Alignment.center,
-                            child: Text((gridList?[position].content)!, textAlign: TextAlign.center, style: TextStyle(height: 1.5, fontSize: multiplier * unitWidthValue,),),
-                          ),
                           padding: EdgeInsets.only(top: 2 * unitWidthValue,),
                         ),
-                        boolToday? Container(
-                          child: Align(
-                            alignment: Alignment.bottomCenter,
-                            child: RatingBarIndicator(
-                              rating: (gridList?[position].rating)!,
-                              itemBuilder: (context, index) => Icon(
-                                Icons.star,
-                                color: goodList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.lightGreen : badList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.pink : Colors.lightBlue,
-                              ),
-                              itemCount: 5,
-                              itemSize: unitWidthValue * 6,
-                              direction: Axis.horizontal,
-                            ),
-                          ),
-                          padding: EdgeInsets.only(bottom: 7 * unitWidthValue,),
-                        ) : Container(),
+                        Spacer(),
                         Container(
-                          child: Align(
-                            alignment: Alignment.bottomCenter,
-                            child: Text('${gridList![position].calorie!}Kcal',  style: TextStyle(fontSize: multiplier * unitWidthValue,),),
+                          child: Column(
+                            children: [
+                              Text((gridList?[position].content)!, textAlign: TextAlign.center, style: TextStyle(height: 1.4, fontSize: multiplier * unitWidthValue, ),),
+                              Container(
+                                padding: EdgeInsets.only(top: 2 * unitWidthValue,),
+                              ),
+                              Text('${gridList?[position].calorie!}Kcal', style: TextStyle(fontSize: multiplier * unitWidthValue, fontWeight: FontWeight. bold),),
+                            ],
                           ),
-                          padding: EdgeInsets.only(bottom: 1.5 * unitWidthValue,),
+                        ),
+                        Spacer(),
+                        boolToday? Container(
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.person,
+                                      color: goodList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.lightGreen : badList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.pink : Colors.lightBlue,
+                                    ),
+                                    Text(' 리뷰 ${gridList?[position].rating_count}개', style: TextStyle(height: 1, fontSize: multiplier * unitWidthValue,),)
+                                  ],
+                                ),
+                                RatingBarIndicator(
+                                  rating: (gridList?[position].rating)!,
+                                  itemBuilder: (context, index) => Icon(
+                                    Icons.star,
+                                    color: goodList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.lightGreen : badList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.pink : Colors.lightBlue,
+                                  ),
+                                  itemCount: 5,
+                                  itemSize: unitWidthValue * 6,
+                                  direction: Axis.horizontal,
+                                ),
+                              ],
+                            ),
+                          padding: EdgeInsets.only(bottom: 2 * unitWidthValue,),
+                        ) : Container(
+                          padding: EdgeInsets.only(top: 5 * unitWidthValue,),
                         ),
                       ],
                     ),
@@ -453,7 +471,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
           itemCount: gridList!.length,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2, //1 개의 행에 보여줄 item 개수
-            childAspectRatio: 1 / 1.6, //item 의 가로 1, 세로 2 의 비율
+            childAspectRatio: boolToday? 1 / 1.6 : 1 / 1.3, //item 의 가로 1, 세로 2 의 비율
             mainAxisSpacing: 0.01 * MediaQuery.of(context).size.width, //수평 Padding
             crossAxisSpacing: 0.01 * MediaQuery.of(context).size.width, //수직 Padding
           ),
@@ -531,7 +549,20 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
               title: Text('평가하기'),
               onTap: () {
                 Navigator.pop(context, "Cancel");
-                createRatingDialog(context, element);
+                if (viewModel.user != null){
+                  createRatingDialog(context, element);
+                } else {
+                  Fluttertoast.showToast(
+                      msg: "카카오 로그인을 먼저 해주세요",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.BOTTOM,
+                      timeInSecForIosWeb: 1,
+                      backgroundColor: Colors.redAccent,
+                      textColor: Colors.white,
+                      fontSize: MediaQuery.of(context).size.width * 0.04
+                  );
+                  _scaffoldKey.currentState?.openDrawer();
+                }
               },
             ) : Container()
           ],
@@ -585,7 +616,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
               MaterialButton(
                 child: Text('평가하기'),
                 minWidth: 0.3,
-                onPressed: () {
+                onPressed: () async {
                   if (viewModel.user != null){
                     int time = 480;
                     switch (element.time) {
@@ -600,7 +631,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                         break;
                     }
                     if ((DateTime.now().hour * 60 + DateTime.now().minute) > time) {
-                      postRating(viewModel.user?.id, element.id, rate);
+                      await postRating(viewModel.user?.id, element.id, rate);
                       Navigator.pop(context, "Cancel");
                       fetchToday();
                       Fluttertoast.showToast(

@@ -53,7 +53,7 @@ class MyApp extends StatelessWidget {
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
         primaryColor: Colors.blue[500],
-        textTheme: GoogleFonts.notoSansNKoTextTheme(
+        textTheme: GoogleFonts.notoSansTextTheme(
           Theme.of(context).textTheme
         ),
         scaffoldBackgroundColor: Colors.white,
@@ -86,13 +86,24 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver{
   List<Meal> mealList = List.empty(growable: true);
   List<Photo> photoList = List.empty(growable: true);
   List<Restaurant> restList = List.empty(growable: true);
+  int _currentIndex = 0;
+  List pageList = [];
+
+  createPage() {
+    pageList.clear();
+    for (var i = 0; i < 9; i++) {
+      var d = DateTime.now().add(Duration(days: i));
+      pageList.add(d);
+    }
+    setState(() {});
+  }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     switch (state) {
       case AppLifecycleState.resumed:
         setState(() {
-
+          createPage();
         });
         break;
       case AppLifecycleState.inactive:
@@ -150,7 +161,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver{
     }
     fetchRestaurants();
   }
-  int _currentIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -159,7 +170,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver{
           onPageChanged: (index) {
             setState(() => _currentIndex = index);
           },
-          children: <Widget>[MealApp(list:mealList), MealPhotoApp(list:photoList), RecommendationApp(list:restList), BookmarkApp()],
+          children: <Widget>[MealApp(list:mealList, pageList: pageList,), MealPhotoApp(list:photoList), RecommendationApp(list:restList), BookmarkApp()],
           controller: _pageController,
         ),
         bottomNavigationBar: BottomNavyBar(
