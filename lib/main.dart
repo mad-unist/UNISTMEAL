@@ -95,7 +95,9 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver{
       var d = DateTime.now().add(Duration(days: i));
       pageList.add(d);
     }
-    setState(() {});
+    setState(() {
+
+    });
   }
 
   @override
