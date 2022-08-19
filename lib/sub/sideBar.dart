@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unistapp/sub/loginViewModel.dart';
+import 'package:unistapp/sub/tutorialPage.dart';
 
 class SideBarApp extends StatefulWidget {
   final loginViewModel viewModel;
@@ -15,7 +16,7 @@ class SideBarApp extends StatefulWidget {
 class _SideBarAppState extends State<SideBarApp> {
   final loginViewModel viewModel;
   List<String> profileUrl = ['','카카오 로그인이 필요합니다','이메일 정보가 없습니다'];
-
+  int currentIndex = 0;
   _SideBarAppState(this.viewModel);
 
   void initState() {
@@ -120,6 +121,14 @@ class _SideBarAppState extends State<SideBarApp> {
           ListTile(
             leading: Icon(Icons.question_mark),
             title: Text('튜토리얼'),
+            onTap: () {
+              Navigator.pop(context, "Cancel");
+              showDialog(
+                context: context,
+                barrierDismissible: true,
+                builder: (BuildContext context) => TutorialDialog(),
+              );
+            },
           ),
           Divider(),
           ListTile(
@@ -142,4 +151,5 @@ class _SideBarAppState extends State<SideBarApp> {
       ),
     );
   }
+
 }

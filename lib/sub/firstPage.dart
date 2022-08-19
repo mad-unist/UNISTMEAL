@@ -14,11 +14,12 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:unistapp/sub/loginViewModel.dart';
 import 'package:unistapp/sub/sideBar.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:unistapp/sub/tutorialPage.dart';
 
 class MealApp extends StatefulWidget {
   final List<Meal>? list;
   List? pageList;
-  MealApp({Key? key, this.list, this.pageList}) : super(key: key);
+  MealApp({Key? key, this.list, this.pageList,}) : super(key: key);
 
   @override
   _MealAppState createState() => _MealAppState(list, pageList!);
@@ -35,8 +36,9 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
   List<Meal>? sortList = [];
   List pageList = [];
   List<Meal> todayList = [];
-  _MealAppState(this.list, this.pageList);
+  _MealAppState(this.list, this.pageList,);
   Map<String, dynamic> rateHistory = {};
+  int initTab = 1;
 
   final viewModel = loginViewModel(KakaoLogin());
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -79,15 +81,31 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
       var d = DateTime.now().add(Duration(days: i));
       pageList.add(d);
     }
-    setState(() {});
+    setState(() {
+
+    });
+  }
+
+  setPage() {
+    setState(() {
+      var m = DateTime.now().hour * 60 + DateTime.now().minute;
+      if (m >= 840) {
+        initTab = 2;
+      } else if (m >= 570) {
+        initTab = 1;
+      } else {
+        initTab = 0;
+      }
+    });
   }
 
   @override
   void initState() {
     super.initState();
     _loginCheck();
-    controller = TabController(initialIndex: 1, length: 3, vsync: this);
     createPage();
+    setPage();
+    controller = TabController(initialIndex: initTab, length: 3, vsync: this);
     getGoodList();
     getBadList();
     getPrefList();
@@ -219,6 +237,19 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                 appBar: AppBar(
                   title: Text('유니스트 식단표'),
                   actions: [
+                    TextButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          barrierDismissible: true,
+                          builder: (BuildContext context) => TutorialDialog(),
+                        );
+                      },
+                      child: FaIcon(
+                          Icons.help_outline,
+                          color: Theme.of(context).colorScheme.onPrimary
+                      ),
+                    ),
                     TextButton(
                       onPressed: () {
                         createAlertDialog(context);
@@ -630,7 +661,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                         time = 1020;
                         break;
                     }
-                    if ((DateTime.now().hour * 60 + DateTime.now().minute) > time) {
+                    if ((DateTime.now().hour * 60 + DateTime.now().minute) >= time) {
                       await postRating(viewModel.user?.id, element.id, rate);
                       Navigator.pop(context, "Cancel");
                       fetchToday();
