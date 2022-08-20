@@ -11,6 +11,7 @@ import 'package:unistapp/meal.dart';
 import 'package:intl/intl.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:unistapp/rating.dart';
 import 'package:unistapp/sub/loginViewModel.dart';
 import 'package:unistapp/sub/sideBar.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -36,12 +37,19 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
   List<Meal>? sortList = [];
   List pageList = [];
   List<Meal> todayList = [];
+  List<Rating> todayRatingList = [];
+  List<String> profileUrl = ['','카카오 로그인이 필요합니다','이메일 정보가 없습니다',''];
   _MealAppState(this.list, this.pageList,);
   Map<String, dynamic> rateHistory = {};
   int initTab = 1;
-
-  final viewModel = loginViewModel(KakaoLogin());
+  var viewModel = loginViewModel(KakaoLogin());
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  callback(login) {
+    setState(() {
+      getProfileUrl();
+    });
+  }
 
   void getGoodList() async{
     final prefs = await SharedPreferences.getInstance();
@@ -65,6 +73,14 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       prefs.setStringList("prefList", setList);
+    });
+  }
+
+  void getProfileUrl() async{
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      profileUrl = prefs.getStringList("profileUrl")!;
+      fetchTodayRating();
     });
   }
 
@@ -99,10 +115,31 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
     });
   }
 
+  Future<String> fetchTodayRating() async {
+    if (profileUrl[3] != '') {
+      final response = await http.get(Uri.parse('https://unist-meal-backend.herokuapp.com/rating/v1/today-ratings/${profileUrl[3]}?format=json'));
+      setState(() {
+        print(response);
+        var _text = utf8.decode(response.bodyBytes);
+        var data = jsonDecode(_text)['data'] as List;
+        List<Rating> tempList = [];
+        data.forEach((element) {
+          tempList.add(Rating.fromJson(element));
+        });
+        todayRatingList = tempList;
+      });
+    } else{
+      todayRatingList.clear();
+    }
+    return "Sucessful";
+  }
+
+
   @override
   void initState() {
     super.initState();
     _loginCheck();
+    getProfileUrl();
     createPage();
     setPage();
     controller = TabController(initialIndex: initTab, length: 3, vsync: this);
@@ -233,7 +270,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
             return Material(
               child: Scaffold(
                 key: _scaffoldKey,
-                drawer: SideBarApp(viewModel: viewModel,),
+                drawer: SideBarApp(viewModel: viewModel, callbackFunction: callback,),
                 appBar: AppBar(
                   title: Text('유니스트 식단표'),
                   actions: [
@@ -425,7 +462,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
             return Container(
               child: GestureDetector(
                 onLongPress: () {
-                  createPopupMenu(context, gridList?[position], koreanDay, boolToday);
+                  createPopupMenu(context, gridList?[position], gridList, koreanDay, boolToday);
                 },
                 child: Container(
                   margin: EdgeInsets.only(bottom: 1 * unitWidthValue,),
@@ -469,7 +506,10 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Icon(
+                                    if (todayRatingList.any((data) => data.menu == gridList?[position].id)) const Icon(
+                                        Icons.person,
+                                        color: Colors.yellow,
+                                      ) else Icon(
                                       Icons.person,
                                       color: goodList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.lightGreen : badList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.pink : Colors.lightBlue,
                                     ),
@@ -541,7 +581,15 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
     }
   }
 
-  createPopupMenu(BuildContext context, element, koreanDay, boolToday) {
+  createPopupMenu(BuildContext context, element, tabMenu, koreanDay, boolToday) {
+    int? rated = 0;
+    tabMenu.forEach((element1) {
+      todayRatingList.forEach((element2) {
+        if (element1.id == element2.id) {
+          rated = element2.id;
+        }
+      });
+    });
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -550,7 +598,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
           children: [
             ListTile(
               leading: Icon(Icons.share),
-              title: Text('공유하기'),
+              title: Text('카카오톡 공유하기'),
               onTap: () {
                 kakaoShare(element, koreanDay);
                 Navigator.pop(context, "Cancel");
@@ -558,7 +606,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
             ),
             ListTile(
               leading: Icon(Icons.copy),
-              title: Text('복사하기'),
+              title: Text('클립보드 복사하기'),
               onTap: () {
                 Clipboard.setData(ClipboardData(
                   text: '${element.place} ${element.type} ${element.month}/${element.day} (${koreanDay})\n\n${element.content}',
@@ -577,11 +625,11 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
             ),
             boolToday? ListTile(
               leading: Icon(Icons.star),
-              title: Text('평가하기'),
+              title: (todayRatingList.any((data) => data.menu == element.id))? Text('식단평가 수정하기') : Text('식단 평가하기'),
               onTap: () {
                 Navigator.pop(context, "Cancel");
                 if (viewModel.user != null){
-                  createRatingDialog(context, element);
+                  createRatingDialog(context, element, rated);
                 } else {
                   Fluttertoast.showToast(
                       msg: "카카오 로그인을 먼저 해주세요",
@@ -602,7 +650,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
     );
   }
 
-  createRatingDialog(BuildContext context, element){
+  createRatingDialog(BuildContext context, element, rated){
     double rate = 3.0;
     return showDialog(context: context, builder: (context)
     {
@@ -613,7 +661,8 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text("식단 평가는 한끼당 한개만 가능하며,\n여러개를 평가할 경우,\n 마지막 평가만 인정됩니다.", textAlign: TextAlign.center, style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.035,)),
+                rated? Text("이미 ${element.time}에 평가한 식단이 있습니다.\n새로운 평가를 작성하시면,\n기존 평가는 삭제됩니다.", textAlign: TextAlign.center, style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.035,))
+                    : Text("식단을 평가해 주세요.", textAlign: TextAlign.center, style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.035,)),
                 RatingBar.builder(
                   initialRating: 3,
                   minRating: 1,
@@ -662,6 +711,9 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                         break;
                     }
                     if ((DateTime.now().hour * 60 + DateTime.now().minute) >= time) {
+                      if (rated) {
+                        await deleteRating(viewModel.user?.id, rated);
+                      }
                       await postRating(viewModel.user?.id, element.id, rate);
                       Navigator.pop(context, "Cancel");
                       fetchToday();
@@ -722,9 +774,23 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
     );
   }
 
+  Future<http.Response> deleteRating(userId, mealId) async{
+    return await http.delete(
+      Uri.parse('https://unist-meal-backend.herokuapp.com/rating/v1/ratings'),
+      headers:{
+        'Content-Type': "application/json",
+      },
+      body: jsonEncode(<String, dynamic>{
+        "user_id": "${userId}",
+        "menu_id": mealId,
+      }),
+    );
+  }
+
   Future<String> fetchToday() async {
     final response = await http.get(Uri.parse('https://unist-meal-backend.herokuapp.com/menu/v1/today-menus?format=json'));
     setState(() {
+      fetchTodayRating();
       var _text = utf8.decode(response.bodyBytes);
       var data = jsonDecode(_text)['data'] as List;
       todayList.clear();

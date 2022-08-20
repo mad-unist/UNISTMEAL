@@ -190,38 +190,60 @@ class _RecommendationAppState extends State<RecommendationApp> with SingleTicker
                 color: Colors.lightBlue[50],
                 child: Column(
                   children: [
-                    Container(
-                      child: Align(
-                        alignment: Alignment.topLeft,
-                        child: Column(
+                    Column(
+                      children: [
+                        Row(
                           children: [
-                            Row(
-                              children: [
-                                Container(
-                                  child: Text((restaurantList?[position].name)!, textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold, fontSize: multiplier * uniWidthValue,),),
-                                  padding: EdgeInsets.fromLTRB(0.1 * queryData.size.width, 0.02 * queryData.size.width, 0, 0),
-                                ),
-                                Spacer(),
-                                Container(
-                                  child: Text((restaurantList?[position].place)!, textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold, fontSize: multiplier * uniWidthValue,),),
-                                  padding: EdgeInsets.fromLTRB(0, 0.02 * queryData.size.width, 0.1 * queryData.size.width, 0),
-                                ),
-                              ],
+                            Container(
+                              child: Text((restaurantList?[position].name)!, textAlign: TextAlign.left, style: TextStyle(fontWeight: FontWeight.bold, fontSize: multiplier * uniWidthValue,),),
+                              padding: EdgeInsets.fromLTRB(0.1 * queryData.size.width, 0.02 * queryData.size.width, 0, 0),
                             ),
-                            Divider(
-                              thickness: 2,
-                              indent: 20,
-                              endIndent: 20,
-                              color: Colors.lightBlue,
+                            Spacer(),
+                            Container(
+                              child: Text((restaurantList?[position].place)!, textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.bold, fontSize: multiplier * uniWidthValue,),),
+                              padding: EdgeInsets.fromLTRB(0, 0.02 * queryData.size.width, 0.1 * queryData.size.width, 0),
                             ),
                           ],
                         ),
-                      ),
+                        Divider(
+                          thickness: 2,
+                          indent: 20,
+                          endIndent: 20,
+                          color: Colors.lightBlue,
+                        ),
+                      ],
                     ),
+                    Spacer(),
                     Container(
                       alignment: Alignment.centerLeft,
-                      child: Text("${(restaurantList?[position].content)!}\n${(restaurantList?[position].phone)!}", textAlign: TextAlign.left, style: TextStyle(height: 2, fontSize: multiplier * uniWidthValue,),),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.restaurant_menu,
+                            color: Colors.lightBlue,
+                          ),
+                          Text("  ${(restaurantList?[position].content)!}", textAlign: TextAlign.left, style: TextStyle(height: 1, fontSize: multiplier * uniWidthValue,),),
+                        ],
+                      ),
                       padding: EdgeInsets.fromLTRB(0.05 * queryData.size.width, 0, 0, 0),
+                    ),
+                    Spacer(),
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      child: Row(
+                        children: [
+                          const Icon(
+                          Icons.phone,
+                          color: Colors.lightBlue,
+                          ),
+                          Text("  ${(restaurantList?[position].phone)!}", textAlign: TextAlign.left, style: TextStyle(height: 1, fontSize: multiplier * uniWidthValue,),),
+                        ],
+                      ),
+                      padding: EdgeInsets.fromLTRB(0.05 * queryData.size.width, 0, 0, 0),
+                    ),
+                    Spacer(),
+                    Container(
+                      padding: EdgeInsets.only(bottom: 0.03 * queryData.size.width,),
                     ),
                   ],
                 ),

@@ -117,50 +117,52 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver{
     }
   }
 
+  Future<String> fetchPost() async {
+    final response = await http.get(Uri.parse('https://unist-meal-backend.herokuapp.com/menu/v1/menus?format=json'));
+    setState(() {
+      var _text = utf8.decode(response.bodyBytes);
+      var data = jsonDecode(_text)['data'] as List;
+      data.forEach((element) {
+        mealList.add(Meal.fromJson(element));
+      });
+    });
+    return "Sucessful";
+  }
+
+  // photo API 연동
+  Future<String> fetchPhotos() async {
+    final response = await http.get(Uri.parse('https://unist-meal-backend.herokuapp.com/photo/v1/photos?format=json'));
+    setState(() {
+      var _text = utf8.decode(response.bodyBytes);
+      var data = jsonDecode(_text)['data'] as List;
+      data.forEach((element) {
+        photoList.add(Photo.fromJson(element));
+      });
+    });
+    return "Sucessful";
+  }
+
+  // restaurant API 연동
+  Future<String> fetchRestaurants() async {
+    final response = await http.get(Uri.parse('https://unist-meal-backend.herokuapp.com/restaurant/v1/restaurants?format=json'));
+    setState(() {
+      var _text = utf8.decode(response.bodyBytes);
+      var data = jsonDecode(_text)['data'] as List;
+      data.forEach((element) {
+        restList.add(Restaurant.fromJson(element));
+      });
+    });
+    return "Sucessful";
+  }
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _pageController = PageController();
     _checkVersion();
-    Future<String> fetchPost() async {
-      final response = await http.get(Uri.parse('https://unist-meal-backend.herokuapp.com/menu/v1/menus?format=json'));
-      setState(() {
-        var _text = utf8.decode(response.bodyBytes);
-        var data = jsonDecode(_text)['data'] as List;
-        data.forEach((element) {
-          mealList.add(Meal.fromJson(element));
-        });
-      });
-      return "Sucessful";
-    }
     fetchPost();
-    // photo API 연동
-    Future<String> fetchPhotos() async {
-      final response = await http.get(Uri.parse('https://unist-meal-backend.herokuapp.com/photo/v1/photos?format=json'));
-      setState(() {
-        var _text = utf8.decode(response.bodyBytes);
-        var data = jsonDecode(_text)['data'] as List;
-        data.forEach((element) {
-          photoList.add(Photo.fromJson(element));
-        });
-      });
-      return "Sucessful";
-    }
     fetchPhotos();
-
-    // restaurant API 연동
-    Future<String> fetchRestaurants() async {
-      final response = await http.get(Uri.parse('https://unist-meal-backend.herokuapp.com/restaurant/v1/restaurants?format=json'));
-      setState(() {
-        var _text = utf8.decode(response.bodyBytes);
-        var data = jsonDecode(_text)['data'] as List;
-        data.forEach((element) {
-          restList.add(Restaurant.fromJson(element));
-        });
-      });
-      return "Sucessful";
-    }
     fetchRestaurants();
   }
 
