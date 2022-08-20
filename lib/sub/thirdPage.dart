@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:photo_view/photo_view.dart';
 import 'package:unistapp/restaurant.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
@@ -113,7 +112,6 @@ class _RecommendationAppState extends State<RecommendationApp> with SingleTicker
       child: ListView.builder(
         itemBuilder: (context, position) {
           MediaQueryData queryData = MediaQuery.of(context);
-          double unitHeightValue = MediaQuery.of(context).size.height * 0.01;
           double uniWidthValue = MediaQuery.of(context).size.width * 0.01;
           double multiplier = 4;
           return Container(
@@ -131,7 +129,7 @@ class _RecommendationAppState extends State<RecommendationApp> with SingleTicker
                           Navigator.of(context).push(MaterialPageRoute(builder: (context)=> detailMenu(shopName: restaurantList![position])));
                         } else {
                           Fluttertoast.showToast(
-                              msg: "메뉴 사진이 존재하지 않습니다.",
+                              msg: "메뉴 사진이 존재하지 않습니다.\n개발자 문의하기를 통해 사진을 제보해주세요.",
                               toastLength: Toast.LENGTH_SHORT,
                               gravity: ToastGravity.BOTTOM,
                               timeInSecForIosWeb: 1,
