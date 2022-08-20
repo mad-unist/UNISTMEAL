@@ -661,7 +661,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                rated? Text("이미 ${element.time}에 평가한 식단이 있습니다.\n새로운 평가를 작성하시면,\n기존 평가는 삭제됩니다.", textAlign: TextAlign.center, style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.035,))
+                rated > 0? Text("이미 ${element.time}에 평가한 식단이 있습니다.\n새로운 평가를 작성하시면,\n기존 평가는 삭제됩니다.", textAlign: TextAlign.center, style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.035,))
                     : Text("식단을 평가해 주세요.", textAlign: TextAlign.center, style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.035,)),
                 RatingBar.builder(
                   initialRating: 3,
@@ -711,7 +711,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                         break;
                     }
                     if ((DateTime.now().hour * 60 + DateTime.now().minute) >= time) {
-                      if (rated) {
+                      if (rated > 0) {
                         await deleteRating(viewModel.user?.id, rated);
                       }
                       await postRating(viewModel.user?.id, element.id, rate);
