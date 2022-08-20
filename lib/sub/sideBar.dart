@@ -7,17 +7,19 @@ import 'package:unistapp/sub/tutorialPage.dart';
 
 class SideBarApp extends StatefulWidget {
   final loginViewModel viewModel;
-  const SideBarApp({Key? key, required this.viewModel}) : super(key: key);
+  final Function callbackFunction;
+  const SideBarApp({Key? key, required this.viewModel, required this.callbackFunction}) : super(key: key);
   @override
-  _SideBarAppState createState() => _SideBarAppState(viewModel);
+  _SideBarAppState createState() => _SideBarAppState(viewModel, callbackFunction);
 }
 
 
 class _SideBarAppState extends State<SideBarApp> {
   final loginViewModel viewModel;
-  List<String> profileUrl = ['','카카오 로그인이 필요합니다','이메일 정보가 없습니다'];
+  final Function callbackFunction;
+  List<String> profileUrl = ['','카카오 로그인이 필요합니다','이메일 정보가 없습니다',''];
   int currentIndex = 0;
-  _SideBarAppState(this.viewModel);
+  _SideBarAppState(this.viewModel, this.callbackFunction);
 
   void initState() {
     super.initState();
@@ -83,8 +85,9 @@ class _SideBarAppState extends State<SideBarApp> {
               onPressed: () async{
                 await viewModel.login();
                 setState(() {
-                  profileUrl = [(viewModel.user?.kakaoAccount?.profile?.profileImageUrl)!, (viewModel.user?.kakaoAccount?.profile?.nickname)!, viewModel.user?.kakaoAccount?.email ?? '이메일 정보가 없습니다'];
+                  profileUrl = [(viewModel.user?.kakaoAccount?.profile?.profileImageUrl)!, (viewModel.user?.kakaoAccount?.profile?.nickname)!, viewModel.user?.kakaoAccount?.email ?? '이메일 정보가 없습니다', (viewModel.user?.id)!.toString()];
                   setProfileUrl();
+                  callbackFunction(true);
                 });
               },
             ) else ListTile(
@@ -93,11 +96,13 @@ class _SideBarAppState extends State<SideBarApp> {
               onTap: () async{
                 await viewModel.logout();
                 setState(() {
-                  profileUrl = ['','카카오 로그인이 필요합니다','이메일 정보가 없습니다'];
+                  profileUrl = ['','카카오 로그인이 필요합니다','이메일 정보가 없습니다', ''];
                   setProfileUrl();
+                  callbackFunction(false);
                 });
               },
             ),
+          Divider(),
           ListTile(
             leading: Icon(Icons.info),
             title: Text('앱 버전 정보'),
@@ -130,23 +135,17 @@ class _SideBarAppState extends State<SideBarApp> {
               );
             },
           ),
-          Divider(),
           ListTile(
             leading: Icon(Icons.settings),
-            title: Text('Settings'),
+            title: Text('설정'),
             onTap: () => null,
           ),
           ListTile(
             leading: Icon(Icons.description),
-            title: Text('Policies'),
+            title: Text('공지사항'),
             onTap: () => null,
           ),
           Divider(),
-          ListTile(
-            title: Text('Exit'),
-            leading: Icon(Icons.exit_to_app),
-            onTap: () => null,
-          ),
         ],
       ),
     );
