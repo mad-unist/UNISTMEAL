@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:easy_refresh/easy_refresh.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -369,6 +371,8 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
   }
 
   exampleTabView(month, day, koreanDay, context, boolToday) {
+    DragStartDetails? dragStartDetails;
+    Drag? drag;
     sortList = list?.where((element) => prefList.contains(element.place)).toList();
     sortList?.sort((a, b) {
       if (prefList.indexOf(a.place!) == prefList.indexOf(b.place!)) {
@@ -423,14 +427,38 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
             color: Colors.black,
           ),
           Expanded(
-            child: TabBarView(
-              physics: NeverScrollableScrollPhysics(),
-              children: [
-                exampleGridview(newlist?.where((data) => data.time == "아침").toList(), koreanDay, context, boolToday),
-                exampleGridview(newlist?.where((data) => data.time == "점심").toList(), koreanDay, context, boolToday),
-                exampleGridview(newlist?.where((data) => data.time == "저녁").toList(), koreanDay, context, boolToday),
-              ],
-              controller: controller,
+            child: NotificationListener(
+              onNotification: (overscroll) {
+                if (overscroll is OverscrollNotification && overscroll.overscroll != 0 && overscroll.dragDetails != null) {
+                  if (controller?.index == 2 ) {
+                    if (_pageNotifier.value != 8) {
+                      pagecontroller.nextPage(
+                        curve: Curves.ease,
+                        duration: Duration(milliseconds: 500),
+                      );
+                      controller?.index = 0;
+                    }
+                  }
+                  else if (controller?.index == 0) {
+                    if (_pageNotifier.value != 0) {
+                      pagecontroller.previousPage(
+                        curve: Curves.ease,
+                        duration: Duration(milliseconds: 500),
+                      );
+                      controller?.index = 2;
+                    }
+                  }
+                }
+                return true;
+              },
+              child: TabBarView(
+                children: [
+                  exampleGridview(newlist?.where((data) => data.time == "아침").toList(), koreanDay, context, boolToday),
+                  exampleGridview(newlist?.where((data) => data.time == "점심").toList(), koreanDay, context, boolToday),
+                  exampleGridview(newlist?.where((data) => data.time == "저녁").toList(), koreanDay, context, boolToday),
+                ],
+                controller: controller,
+              ),
             ),
           ),
         ],
@@ -585,8 +613,8 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
     int? rated = 0;
     tabMenu.forEach((element1) {
       todayRatingList.forEach((element2) {
-        if (element1.id == element2.id) {
-          rated = element2.id;
+        if (element1.id == element2.menu) {
+          rated = element2.menu;
         }
       });
     });
@@ -661,7 +689,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                rated > 0? Text("이미 ${element.time}에 평가한 식단이 있습니다.\n새로운 평가를 작성하시면,\n기존 평가는 삭제됩니다.", textAlign: TextAlign.center, style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.035,))
+                rated > 0? Text("오늘 ${element.time}에 평가한 식단이 이미 존재합니다.\n새로운 평가를 작성하시면,\n기존 평가는 삭제됩니다.", textAlign: TextAlign.center, style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.035,))
                     : Text("식단을 평가해 주세요.", textAlign: TextAlign.center, style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.035,)),
                 RatingBar.builder(
                   initialRating: 3,
