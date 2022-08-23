@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:new_version/new_version.dart';
+import 'package:showcaseview/showcaseview.dart';
 import 'package:unistapp/meal.dart';
 import 'package:unistapp/restaurant.dart';
 import 'package:unistapp/photo.dart';
@@ -43,15 +44,6 @@ class MyApp extends StatelessWidget {
       },
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primaryColor: Colors.blue[500],
         textTheme: GoogleFonts.notoSansTextTheme(
           Theme.of(context).textTheme
@@ -59,24 +51,17 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.white,
 
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: ShowCaseWidget(
+        builder: Builder(
+          builder: (context) => MyHomePage(),
+        ),
+      )
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+  const MyHomePage({Key? key,}) : super(key: key);
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();

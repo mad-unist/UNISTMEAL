@@ -1,13 +1,12 @@
 import 'dart:convert';
 import 'package:easy_refresh/easy_refresh.dart';
-import 'package:flutter/gestures.dart';
-import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:showcaseview/showcaseview.dart';
 import 'package:unistapp/kakaoLogin.dart';
 import 'package:unistapp/meal.dart';
 import 'package:intl/intl.dart';
@@ -17,7 +16,6 @@ import 'package:unistapp/rating.dart';
 import 'package:unistapp/sub/loginViewModel.dart';
 import 'package:unistapp/sub/sideBar.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:unistapp/sub/tutorialPage.dart';
 
 class MealApp extends StatefulWidget {
   final List<Meal>? list;
@@ -46,6 +44,11 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
   int initTab = 1;
   var viewModel = loginViewModel(KakaoLogin());
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final _key1 = GlobalKey();
+  final _key2 = GlobalKey();
+  final _key3 = GlobalKey();
+  final _key4 = GlobalKey();
+  int menuCount = 0;
 
   callback(login) {
     setState(() {
@@ -135,7 +138,6 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
     }
     return "Sucessful";
   }
-
 
   @override
   void initState() {
@@ -274,29 +276,52 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                 key: _scaffoldKey,
                 drawer: SideBarApp(viewModel: viewModel, callbackFunction: callback,),
                 appBar: AppBar(
+                  leading: Showcase(
+                    key: _key1,
+                    child: TextButton(
+                      onPressed: () {
+                        setState (() {
+                          _scaffoldKey.currentState?.openDrawer();
+                        });
+                      },
+                      child: FaIcon(
+                          Icons.menu,
+                          color: Theme.of(context).colorScheme.onPrimary
+                      ),
+                    ),
+                    description: "사이드바 메뉴를 통해 다양한 기능들을 활용하세요.",
+                  ),
                   title: Text('유니스트 식단표'),
                   actions: [
                     TextButton(
                       onPressed: () {
-                        showDialog(
-                          context: context,
-                          barrierDismissible: true,
-                          builder: (BuildContext context) => TutorialDialog(),
-                        );
+                        setState (() {
+                          ShowCaseWidget.of(context).startShowCase([_key1, _key2, _key3, _key4,]);
+                        });
+
+                        // showDialog(
+                        //   context: context,
+                        //   barrierDismissible: true,
+                        //   builder: (BuildContext context) => TutorialDialog(),
+                        // );
                       },
                       child: FaIcon(
                           Icons.help_outline,
                           color: Theme.of(context).colorScheme.onPrimary
                       ),
                     ),
-                    TextButton(
-                      onPressed: () {
-                        createAlertDialog(context);
-                      },
-                      child: FaIcon(
-                          FontAwesomeIcons.rankingStar,
-                          color: Theme.of(context).colorScheme.onPrimary
+                    Showcase(
+                      key: _key2,
+                      child: TextButton(
+                        onPressed: () {
+                          createAlertDialog(context);
+                        },
+                        child: FaIcon(
+                            FontAwesomeIcons.rankingStar,
+                            color: Theme.of(context).colorScheme.onPrimary
+                        ),
                       ),
+                      description: "식단표를 원하는 순서로 정렬하거나,\n보고 싶은 식단표만 보세요."
                     ),
                   ],
                 ),
@@ -304,41 +329,55 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                   fit: StackFit.expand,
                   children: [
                     Container(
-                        child: PageView.builder(
-                          controller: pagecontroller,
-                          itemCount: pageList.length,
-                          itemBuilder: (context, position) {
-                            if (position == 0) {
-                              return exampleTabView(pageList[position].month, pageList[position].day, DateFormat.E('ko_KR').format(pageList[position]), context, true);
-                            } else {
-                              return exampleTabView(pageList[position].month, pageList[position].day, DateFormat.E('ko_KR').format(pageList[position]), context, false);
-                            }
-                          },
-                          onPageChanged: (index){
-                            setState(() {
-                              _pageNotifier.value = index;
-                            });
-                          },
-                        )
+                      alignment: Alignment.bottomCenter,
+                      margin: EdgeInsets.only(top: MediaQuery.of(context).size.width * 0.22),
+                      color: Colors.yellow,
+                      child : Showcase(
+                        key: _key3,
+                        description: "식단표를 길게 터치해 식단을 평가하거나 공유하세요.",
+                        child: Container(),
+                      ),
+                    ),
+                    Container(
+                      child: PageView.builder(
+                        controller: pagecontroller,
+                        itemCount: pageList.length,
+                        itemBuilder: (context, position) {
+                          if (position == 0) {
+                            return exampleTabView(pageList[position].month, pageList[position].day, DateFormat.E('ko_KR').format(pageList[position]), context, true);
+                          } else {
+                            return exampleTabView(pageList[position].month, pageList[position].day, DateFormat.E('ko_KR').format(pageList[position]), context, false);
+                          }
+                        },
+                        onPageChanged: (index){
+                          setState(() {
+                            _pageNotifier.value = index;
+                          });
+                        },
+                      ),
                     ),
                     Container(
                       alignment: Alignment.bottomCenter,
                       margin: EdgeInsets.only(bottom: 1.0 * MediaQuery.of(context).size.width * 0.015,),
-                      child: SmoothPageIndicator(
-                        controller: pagecontroller,
-                        count:  9,
-                        effect:  WormEffect(
-                          dotHeight: MediaQuery.of(context).size.width * 0.035,
-                          dotWidth: MediaQuery.of(context).size.width * 0.035,
-                          spacing: MediaQuery.of(context).size.width * 0.035,
-                          paintStyle: PaintingStyle.fill,
+                      child: Showcase(
+                        key: _key4,
+                        description: "도트를 터치해 한번에 여러 페이지를 쉽게 이동하세요.",
+                        child: SmoothPageIndicator(
+                          controller: pagecontroller,
+                          count:  9,
+                          effect:  WormEffect(
+                            dotHeight: MediaQuery.of(context).size.width * 0.035,
+                            dotWidth: MediaQuery.of(context).size.width * 0.035,
+                            spacing: MediaQuery.of(context).size.width * 0.035,
+                            paintStyle: PaintingStyle.fill,
+                          ),
+                          onDotClicked: (index){
+                            setState(() {
+                              _pageNotifier.value = index;
+                              pagecontroller.animateToPage(index, duration: Duration(milliseconds: 500), curve: Curves.ease);
+                            });
+                          },
                         ),
-                        onDotClicked: (index){
-                          setState(() {
-                            _pageNotifier.value = index;
-                            pagecontroller.animateToPage(index, duration: Duration(milliseconds: 500), curve: Curves.ease);
-                          });
-                        },
                       ),
                     ),
                   ],
@@ -371,8 +410,6 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
   }
 
   exampleTabView(month, day, koreanDay, context, boolToday) {
-    DragStartDetails? dragStartDetails;
-    Drag? drag;
     sortList = list?.where((element) => prefList.contains(element.place)).toList();
     sortList?.sort((a, b) {
       if (prefList.indexOf(a.place!) == prefList.indexOf(b.place!)) {
@@ -381,15 +418,13 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
         return prefList.indexOf(a.place!).compareTo(prefList.indexOf(b.place!));
       }
     });
-    double unitHeightValue = MediaQuery.of(context).size.height * 0.01;
     double unitWidthValue = MediaQuery.of(context).size.width * 0.01;
-    double multiplier = 3;
     List<Meal>? newlist = sortList?.where((data) => data.month == month && data.day == day).toList();
     return Scaffold(
       body: Column(
         children: [
           Container(
-            child: Text('${month}월 ${day}일 (${koreanDay})', textAlign: TextAlign.center, style: TextStyle(fontSize: multiplier * unitHeightValue)),
+            child: Text('${month}월 ${day}일 (${koreanDay})', textAlign: TextAlign.center, style: TextStyle(fontSize: 6 * unitWidthValue)),
           ),
           TabBar(
             unselectedLabelColor: Colors.black,
@@ -406,14 +441,17 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
             indicatorSize: TabBarIndicatorSize.label,
             tabs: [
               Container(
+                height: unitWidthValue * 10,
                 width: unitWidthValue * 25,
                 child: Tab(text: '아침',),
               ),
               Container(
+                height: unitWidthValue * 10,
                 width: unitWidthValue * 25,
                 child: Tab(text: '점심',),
               ),
               Container(
+                height: unitWidthValue * 10,
                 width: unitWidthValue * 25,
                 child: Tab(text: '저녁',),
               ),
@@ -436,7 +474,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                         curve: Curves.ease,
                         duration: Duration(milliseconds: 500),
                       );
-                      controller?.index = 0;
+                      //controller?.animateTo(0, duration: Duration.zero);
                     }
                   }
                   else if (controller?.index == 0) {
@@ -445,7 +483,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                         curve: Curves.ease,
                         duration: Duration(milliseconds: 500),
                       );
-                      controller?.index = 2;
+                      //controller?.animateTo(2, duration: Duration.zero);
                     }
                   }
                 }
@@ -485,86 +523,8 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
         child: GridView.builder(
           primary: true,
           itemBuilder: (context, position) {
-            double unitWidthValue = MediaQuery.of(context).size.width * 0.01;
-            double multiplier = 3.3;
             return Container(
-              child: GestureDetector(
-                onLongPress: () {
-                  createPopupMenu(context, gridList?[position], gridList, koreanDay, boolToday);
-                },
-                child: Container(
-                  margin: EdgeInsets.only(bottom: 1 * unitWidthValue,),
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8 * unitWidthValue)
-                    ),
-                    color: goodList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.lightGreen[50] : badList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.pink[50] : Colors.lightBlue[50],
-                    child:  Column(
-                      children: <Widget>[
-                        Container(
-                            child: Column(
-                              children: [
-                                Text('${gridList?[position].place}  ${gridList?[position].type}', textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 4 * unitWidthValue,),),
-                                Divider(
-                                  thickness: 0.5 * unitWidthValue,
-                                  indent: 5 * unitWidthValue,
-                                  endIndent: 5 * unitWidthValue,
-                                  color: goodList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.lightGreen : badList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.pink : Colors.lightBlue,
-                                ),
-                              ],
-                            ),
-                          padding: EdgeInsets.only(top: 2 * unitWidthValue,),
-                        ),
-                        Spacer(),
-                        Container(
-                          child: Column(
-                            children: [
-                              Text((gridList?[position].content)!, textAlign: TextAlign.center, style: TextStyle(height: 1.4, fontSize: multiplier * unitWidthValue, ),),
-                              Container(
-                                padding: EdgeInsets.only(top: 2 * unitWidthValue,),
-                              ),
-                              Text('${gridList?[position].calorie!}Kcal', style: TextStyle(fontSize: multiplier * unitWidthValue, fontWeight: FontWeight. bold),),
-                            ],
-                          ),
-                        ),
-                        Spacer(),
-                        boolToday? Container(
-                            child: Column(
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    if (todayRatingList.any((data) => data.menu == gridList?[position].id)) const Icon(
-                                        Icons.person,
-                                        color: Colors.yellow,
-                                      ) else Icon(
-                                      Icons.person,
-                                      color: goodList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.lightGreen : badList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.pink : Colors.lightBlue,
-                                    ),
-                                    Text(' 리뷰 ${gridList?[position].rating_count}개', style: TextStyle(height: 1, fontSize: multiplier * unitWidthValue,),)
-                                  ],
-                                ),
-                                RatingBarIndicator(
-                                  rating: (gridList?[position].rating)!,
-                                  itemBuilder: (context, index) => Icon(
-                                    Icons.star,
-                                    color: goodList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.lightGreen : badList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.pink : Colors.lightBlue,
-                                  ),
-                                  itemCount: 5,
-                                  itemSize: unitWidthValue * 6,
-                                  direction: Axis.horizontal,
-                                ),
-                              ],
-                            ),
-                          padding: EdgeInsets.only(bottom: 2 * unitWidthValue,),
-                        ) : Container(
-                          padding: EdgeInsets.only(top: 5 * unitWidthValue,),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+              child: MenuCard(gridList, koreanDay, context, boolToday, position),
             );
           },
           itemCount: gridList!.length,
@@ -573,6 +533,90 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
             childAspectRatio: boolToday? 1 / 1.6 : 1 / 1.3, //item 의 가로 1, 세로 2 의 비율
             mainAxisSpacing: 0.01 * MediaQuery.of(context).size.width, //수평 Padding
             crossAxisSpacing: 0.01 * MediaQuery.of(context).size.width, //수직 Padding
+          ),
+        ),
+      ),
+    );
+  }
+
+  MenuCard(List<Meal>? gridList, koreanDay, context, boolToday, position) {
+    double unitWidthValue = MediaQuery.of(context).size.width * 0.01;
+    double multiplier = 3.3;
+    return Container(
+      child: GestureDetector(
+        onLongPress: () {
+          createPopupMenu(context, gridList?[position], gridList, koreanDay, boolToday);
+        },
+        child: Container(
+          margin: EdgeInsets.only(bottom: 1 * unitWidthValue,),
+          child: Card(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8 * unitWidthValue)
+            ),
+            color: goodList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.lightGreen[50] : badList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.pink[50] : Colors.lightBlue[50],
+            child:  Column(
+              children: <Widget>[
+                Container(
+                  child: Column(
+                    children: [
+                      Text('${gridList?[position].place}  ${gridList?[position].type}', textAlign: TextAlign.start, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 4 * unitWidthValue,),),
+                      Divider(
+                        thickness: 0.5 * unitWidthValue,
+                        indent: 5 * unitWidthValue,
+                        endIndent: 5 * unitWidthValue,
+                        color: goodList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.lightGreen : badList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.pink : Colors.lightBlue,
+                      ),
+                    ],
+                  ),
+                  padding: EdgeInsets.only(top: 2 * unitWidthValue,),
+                ),
+                Spacer(),
+                Container(
+                  child: Column(
+                    children: [
+                      Text((gridList?[position].content)!, textAlign: TextAlign.center, style: TextStyle(height: 1.4, fontSize: multiplier * unitWidthValue, ),),
+                      Container(
+                        padding: EdgeInsets.only(top: 2 * unitWidthValue,),
+                      ),
+                      Text('${gridList?[position].calorie!}Kcal', style: TextStyle(fontSize: multiplier * unitWidthValue, fontWeight: FontWeight. bold),),
+                    ],
+                  ),
+                ),
+                Spacer(),
+                boolToday? Container(
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (todayRatingList.any((data) => data.menu == gridList?[position].id)) const Icon(
+                            Icons.person,
+                            color: Colors.yellow,
+                          ) else Icon(
+                            Icons.person,
+                            color: goodList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.lightGreen : badList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.pink : Colors.lightBlue,
+                          ),
+                          Text(' 리뷰 ${gridList?[position].rating_count}개', style: TextStyle(height: 1, fontSize: multiplier * unitWidthValue,),)
+                        ],
+                      ),
+                      RatingBarIndicator(
+                        rating: (gridList?[position].rating)!,
+                        itemBuilder: (context, index) => Icon(
+                          Icons.star,
+                          color: goodList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.lightGreen : badList.any((element) => (gridList?[position].content)!.contains(element)) ? Colors.pink : Colors.lightBlue,
+                        ),
+                        itemCount: 5,
+                        itemSize: unitWidthValue * 6,
+                        direction: Axis.horizontal,
+                      ),
+                    ],
+                  ),
+                  padding: EdgeInsets.only(bottom: 2 * unitWidthValue,),
+                ) : Container(
+                  padding: EdgeInsets.only(top: 5 * unitWidthValue,),
+                ),
+              ],
+            ),
           ),
         ),
       ),
