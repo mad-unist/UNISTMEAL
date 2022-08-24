@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:http/http.dart' as http;
@@ -16,6 +17,7 @@ import 'package:unistapp/rating.dart';
 import 'package:unistapp/sub/loginViewModel.dart';
 import 'package:unistapp/sub/sideBar.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 class MealApp extends StatefulWidget {
   final List<Meal>? list;
@@ -49,6 +51,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
   final _key3 = GlobalKey();
   final _key4 = GlobalKey();
   int menuCount = 0;
+  final RoundedLoadingButtonController _btnController = RoundedLoadingButtonController();
 
   callback(login) {
     setState(() {
@@ -530,7 +533,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
           itemCount: gridList!.length,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2, //1 개의 행에 보여줄 item 개수
-            childAspectRatio: boolToday? 1 / 1.6 : 1 / 1.3, //item 의 가로 1, 세로 2 의 비율
+            childAspectRatio: boolToday? 1 / 1.6 : 1 / 1.4, //item 의 가로 1, 세로 2 의 비율
             mainAxisSpacing: 0.01 * MediaQuery.of(context).size.width, //수평 Padding
             crossAxisSpacing: 0.01 * MediaQuery.of(context).size.width, //수직 Padding
           ),
@@ -733,7 +736,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                rated > 0? Text("오늘 ${element.time}에 평가한 식단이 이미 존재합니다.\n새로운 평가를 작성하시면,\n기존 평가는 삭제됩니다.", textAlign: TextAlign.center, style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.035,))
+                rated > 0? Text("오늘 ${element.time}에 평가한 식단이 이미 존재합니다.\n새로운 평가를 작성하시면,\n기존 평가는 삭제됩니다.", textAlign: TextAlign.center, style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.035, color: Colors.red, fontWeight: FontWeight. bold,))
                     : Text("식단을 평가해 주세요.", textAlign: TextAlign.center, style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.035,)),
                 RatingBar.builder(
                   initialRating: 3,
@@ -758,72 +761,85 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
               ],
             ),
             actions: [
-              MaterialButton(
-                child: Text('취소'),
-                minWidth: 0.3,
-                onPressed: () {
-                  Navigator.pop(context, "Cancel");
-                },
-              ),
-              MaterialButton(
-                child: Text('평가하기'),
-                minWidth: 0.3,
-                onPressed: () async {
-                  if (viewModel.user != null){
-                    int time = 480;
-                    switch (element.time) {
-                      case "아침":
-                        time = 480;
-                        break;
-                      case "점심":
-                        time = 660;
-                        break;
-                      case "저녁":
-                        time = 1020;
-                        break;
-                    }
-                    if ((DateTime.now().hour * 60 + DateTime.now().minute) >= time) {
-                      if (rated > 0) {
-                        await deleteRating(viewModel.user?.id, rated);
+              Row(
+                children: [
+                  RoundedLoadingButton(
+                    animateOnTap: false,
+                    height: MediaQuery.of(context).size.width * 0.1,
+                    width: MediaQuery.of(context).size.width * 0.3,
+                    child: Text('취소'),
+                    onPressed: () {
+                      Navigator.pop(context, "Cancel");
+                    },
+                    controller: _btnController,
+                  ),
+                  Spacer(),
+                  RoundedLoadingButton(
+                    height: MediaQuery.of(context).size.width * 0.1,
+                    width: MediaQuery.of(context).size.width * 0.3,
+                    child: Text('평가하기'),
+                    onPressed: () async {
+                      if (viewModel.user != null){
+                        int time = 480;
+                        switch (element.time) {
+                          case "아침":
+                            time = 480;
+                            break;
+                          case "점심":
+                            time = 660;
+                            break;
+                          case "저녁":
+                            time = 1020;
+                            break;
+                        }
+                        if ((DateTime.now().hour * 60 + DateTime.now().minute) >= time) {
+                          Timer(Duration(seconds: 5), () {
+                            _btnController.success();
+                          });
+                          if (rated > 0) {
+                            await deleteRating(viewModel.user?.id, rated);
+                          }
+                          await postRating(viewModel.user?.id, element.id, rate);
+                          fetchToday();
+                          Navigator.pop(context, "Cancel");
+                          Fluttertoast.showToast(
+                              msg: "평가 완료",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIosWeb: 1,
+                              backgroundColor: Colors.redAccent,
+                              textColor: Colors.white,
+                              fontSize: MediaQuery.of(context).size.width * 0.04
+                          );
+                        } else {
+                          Fluttertoast.showToast(
+                              msg: "식사 시간 ${(time/60).toInt()}시 이후 평가해주세요",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIosWeb: 1,
+                              backgroundColor: Colors.redAccent,
+                              textColor: Colors.white,
+                              fontSize: MediaQuery.of(context).size.width * 0.04
+                          );
+                          Navigator.pop(context, "Cancel");
+                        }
+                      } else {
+                        Fluttertoast.showToast(
+                            msg: "카카오 로그인을 먼저 해주세요",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.BOTTOM,
+                            timeInSecForIosWeb: 1,
+                            backgroundColor: Colors.redAccent,
+                            textColor: Colors.white,
+                            fontSize: MediaQuery.of(context).size.width * 0.04
+                        );
+                        Navigator.pop(context, "Cancel");
+                        _scaffoldKey.currentState?.openDrawer();
                       }
-                      await postRating(viewModel.user?.id, element.id, rate);
-                      Navigator.pop(context, "Cancel");
-                      fetchToday();
-                      Fluttertoast.showToast(
-                          msg: "평가 완료",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.BOTTOM,
-                          timeInSecForIosWeb: 1,
-                          backgroundColor: Colors.redAccent,
-                          textColor: Colors.white,
-                          fontSize: MediaQuery.of(context).size.width * 0.04
-                      );
-                    } else {
-                      Fluttertoast.showToast(
-                          msg: "식사 시간 ${(time/60).toInt()}시 이후 평가해주세요",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.BOTTOM,
-                          timeInSecForIosWeb: 1,
-                          backgroundColor: Colors.redAccent,
-                          textColor: Colors.white,
-                          fontSize: MediaQuery.of(context).size.width * 0.04
-                      );
-                      Navigator.pop(context, "Cancel");
-                    }
-                  } else {
-                    Fluttertoast.showToast(
-                        msg: "카카오 로그인을 먼저 해주세요",
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.BOTTOM,
-                        timeInSecForIosWeb: 1,
-                        backgroundColor: Colors.redAccent,
-                        textColor: Colors.white,
-                        fontSize: MediaQuery.of(context).size.width * 0.04
-                    );
-                    Navigator.pop(context, "Cancel");
-                    _scaffoldKey.currentState?.openDrawer();
-                  }
-                },
+                    },
+                    controller: _btnController,
+                  ),
+                ],
               ),
             ],
           );
