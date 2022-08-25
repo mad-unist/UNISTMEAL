@@ -30,15 +30,9 @@ class _TutorialDialogState extends State<TutorialDialog> {
             insetPadding: EdgeInsets.all(5 * unitWidthValue,),
             title: Text("앱 튜토리얼", textAlign: TextAlign.center,),
             content: Container(
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .height,
-              margin: EdgeInsets.only(left: 15, right: 15),
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
+              height: MediaQuery.of(context).size.height,
+              margin: EdgeInsets.only(left: 5 * unitWidthValue, right: 5 * unitWidthValue,),
+              width: MediaQuery.of(context).size.width,
               child: Stack(
                 alignment: Alignment.bottomCenter,
                 children: [

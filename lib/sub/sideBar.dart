@@ -1,9 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unistapp/sub/loginViewModel.dart';
+import 'package:unistapp/sub/noticePage.dart';
 import 'package:unistapp/sub/tutorialPage.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SideBarApp extends StatefulWidget {
   final loginViewModel viewModel;
@@ -121,7 +124,15 @@ class _SideBarAppState extends State<SideBarApp> {
           ListTile(
             leading: Icon(Icons.feedback),
             title: Text('개발자에게 문의하기'),
-            onTap: () => null,
+            onTap: () async {
+              Navigator.pop(context, "Cancel");
+              Uri url = await TalkApi.instance.channelChatUrl('https://open.kakao.com/o/sn5ZbRxe');
+              try {
+                await launchBrowserTab(url);
+              } catch (error) {
+
+              }
+            },
           ),
           ListTile(
             leading: Icon(Icons.question_mark),
@@ -136,14 +147,31 @@ class _SideBarAppState extends State<SideBarApp> {
             },
           ),
           ListTile(
-            leading: Icon(Icons.settings),
-            title: Text('설정'),
-            onTap: () => null,
-          ),
-          ListTile(
             leading: Icon(Icons.description),
             title: Text('공지사항'),
-            onTap: () => null,
+            onTap: () {
+              Navigator.pop(context, "Cancel");
+              showDialog(
+                context: context,
+                barrierDismissible: true,
+                builder: (BuildContext context) => NoticeDialog(),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.settings),
+            title: Text('설정'),
+            onTap: () {
+              Fluttertoast.showToast(
+                  msg: "추후 업데이트 예정",
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  timeInSecForIosWeb: 1,
+                  backgroundColor: Colors.redAccent,
+                  textColor: Colors.white,
+                  fontSize: MediaQuery.of(context).size.width * 0.04
+              );
+            },
           ),
           Divider(),
         ],
