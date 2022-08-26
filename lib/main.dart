@@ -15,6 +15,7 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:unistapp/sub/secondPage.dart';
+import 'package:unistapp/sub/splashScreen.dart';
 import 'package:unistapp/sub/thirdPage.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 
@@ -66,6 +67,7 @@ class MyHomePage extends StatefulWidget {
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
+
 class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver{
   PageController _pageController = PageController();
   List<Meal> mealList = List.empty(growable: true);
