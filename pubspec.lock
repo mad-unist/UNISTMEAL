@@ -169,6 +169,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.4+2"
+  easy_splash_screen:
+    dependency: "direct main"
+    description:
+      name: easy_splash_screen
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.4"
   encrypt:
     dependency: transitive
     description:
@@ -778,7 +785,7 @@ packages:
     source: hosted
     version: "4.5.0"
   url_launcher:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: url_launcher
       url: "https://pub.dartlang.org"

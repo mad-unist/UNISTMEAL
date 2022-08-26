@@ -13,9 +13,9 @@ class TutorialDialog extends StatefulWidget {
 class _TutorialDialogState extends State<TutorialDialog> {
   int currentIndex = 0;
   final imageList = [
-    'assets/images/tutorial1.jpg',
-    'assets/images/tutorial2.jpg',
-    'assets/images/유니스트 식단표 - 밥먹어U.png'
+    'assets/images/2page.jpg',
+    'assets/images/3page.jpg',
+    'assets/images/4page.jpg'
   ];
   ValueNotifier<int> _pageNotifier = new ValueNotifier<int>(1);
   PageController pagecontroller =  PageController();

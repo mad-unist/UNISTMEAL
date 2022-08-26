@@ -6,7 +6,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unistapp/sub/loginViewModel.dart';
 import 'package:unistapp/sub/noticePage.dart';
 import 'package:unistapp/sub/tutorialPage.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class SideBarApp extends StatefulWidget {
   final loginViewModel viewModel;
@@ -126,12 +125,37 @@ class _SideBarAppState extends State<SideBarApp> {
             title: Text('개발자에게 문의하기'),
             onTap: () async {
               Navigator.pop(context, "Cancel");
-              Uri url = await TalkApi.instance.channelChatUrl('https://open.kakao.com/o/sn5ZbRxe');
-              try {
-                await launchBrowserTab(url);
-              } catch (error) {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text("개발자 문의", textAlign: TextAlign.center,),
+                    content: Text("밥먹어U 카카오톡 채널로 연결됩니다.", textAlign: TextAlign.center, style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.035,)),
+                    actions: [
+                      MaterialButton(
+                        child: Text('취소'),
+                        minWidth: 0.5,
+                        onPressed: () {
+                          Navigator.pop(context, "Cancel");
+                        },
+                      ),
+                      MaterialButton(
+                        child: Text('확인'),
+                        minWidth: 0.5,
+                        onPressed: () async {
+                          Navigator.pop(context, "Cancel");
+                          Uri url = await TalkApi.instance.channelChatUrl('_xcaYlxj');
+                          try {
+                            await launchBrowserTab(url);
+                          } catch (error) {
 
-              }
+                          }
+                        },
+                      )
+                    ],
+                  );
+                }
+              );
             },
           ),
           ListTile(

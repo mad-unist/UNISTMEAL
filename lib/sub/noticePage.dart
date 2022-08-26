@@ -55,11 +55,11 @@ class _NoticeDialogState extends State<NoticeDialog> {
         } else {
           return AlertDialog(
             contentPadding: EdgeInsets.zero,
-            insetPadding: EdgeInsets.all(5 * unitWidthValue,),
-            title: Text("공지사항", textAlign: TextAlign.center,),
+            insetPadding: EdgeInsets.only(top: 20 * unitWidthValue, bottom: 20 * unitWidthValue, left: 5 * unitWidthValue, right: 5 * unitWidthValue,),
+            title: Text("공지사항 게시판", textAlign: TextAlign.center,),
             content: Container(
               height: MediaQuery.of(context).size.height,
-              margin: EdgeInsets.only(left: 5 * unitWidthValue, right: 5 * unitWidthValue,),
+              margin: EdgeInsets.only(left: 10 * unitWidthValue, right: 10 * unitWidthValue,),
               width: MediaQuery.of(context).size.width,
               child: Stack(
                 children: [
