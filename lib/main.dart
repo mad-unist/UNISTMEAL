@@ -3,6 +3,7 @@ import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:loading_indicator/loading_indicator.dart';
 import 'package:new_version/new_version.dart';
 import 'package:showcaseview/showcaseview.dart';
 import 'package:unistapp/meal.dart';
@@ -15,7 +16,6 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:unistapp/sub/secondPage.dart';
-import 'package:unistapp/sub/splashScreen.dart';
 import 'package:unistapp/sub/thirdPage.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 
@@ -56,14 +56,16 @@ class MyApp extends StatelessWidget {
         builder: Builder(
           builder: (context) => MyHomePage(),
         ),
-      )
+      ),
     );
+  }
+
+  callback() {
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key,}) : super(key: key);
-
+  const MyHomePage({Key? key, }) : super(key: key);
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
@@ -75,6 +77,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver{
   List<Restaurant> restList = List.empty(growable: true);
   int _currentIndex = 0;
   List pageList = [];
+  bool load = false;
+  _MyHomePageState();
 
   createPage() {
     pageList.clear();
@@ -112,6 +116,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver{
       data.forEach((element) {
         mealList.add(Meal.fromJson(element));
       });
+      load = true;
     });
     return "Sucessful";
   }
@@ -153,9 +158,60 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver{
     fetchRestaurants();
   }
 
+  Future<double> tillGetSource(Stream<double> source) async{
+    await for (double value in source){
+      if(value > 0)
+        return value;
+    }
+    return await tillGetSource(source);
+  }
+
+  Widget splashUI (BuildContext context) {
+    return FutureBuilder<double>(
+        future: tillGetSource(
+        Stream<double>.periodic(
+          Duration(milliseconds: 100),
+            (x) => MediaQuery.of(context).size.height
+        )
+    ),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return Scaffold(
+            backgroundColor: const Color(0xff49CCF5),
+            body: Stack(
+              alignment: Alignment.bottomCenter,
+              children: [
+                Container(
+                  alignment: Alignment.bottomCenter,
+                  child: new Image.asset('assets/images/splash.png'),
+                ),
+                Container(
+                  alignment: Alignment.bottomCenter,
+                  width: MediaQuery.of(context).size.width * 0.3,
+                  margin: EdgeInsets.only(bottom: MediaQuery.of(context).size.width * 0.22),
+                  child: LoadingIndicator(
+                    indicatorType: Indicator.ballPulse,
+                    colors: const [Colors.white],
+                    strokeWidth: 2,
+                    backgroundColor: const Color(0xff49CCF5),
+                  )
+                ),
+              ],
+            ),
+          );
+        } else {
+          return Container();
+        }
+      }
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    if(load == false) {
+      return splashUI(context);
+    } else {
+      return Scaffold(
         body: PageView(
           physics: NeverScrollableScrollPhysics(),
           onPageChanged: (index) {
@@ -189,7 +245,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver{
             ),
           ],
         ),
-    );
+      );
+    }
   }
 
   void _checkVersion() async {
