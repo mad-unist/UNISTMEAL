@@ -13,6 +13,7 @@ class TutorialDialog extends StatefulWidget {
 class _TutorialDialogState extends State<TutorialDialog> {
   int currentIndex = 0;
   final imageList = [
+    'assets/images/1page.jpg',
     'assets/images/2page.jpg',
     'assets/images/3page.jpg',
     'assets/images/4page.jpg'

@@ -251,13 +251,10 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver{
 
   void _checkVersion() async {
     final newVersion = NewVersion(
-      forceAppVersion: '2.0.0',
       androidId: 'com.wjddnwls7879.unistbab',
+      iOSId: '1628256171',
     );
     final status=await newVersion.getVersionStatus();
-    print(status?.localVersion);
-    print(status?.storeVersion);
-    print(status?.appStoreLink);
     if(status?.canUpdate==true){
       newVersion.showUpdateDialog(
         context: context,
