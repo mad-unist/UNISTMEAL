@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:new_version/new_version.dart';
 import 'package:showcaseview/showcaseview.dart';
@@ -15,7 +16,6 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:unistapp/sub/secondPage.dart';
-import 'package:unistapp/sub/splashScreen.dart';
 import 'package:unistapp/sub/thirdPage.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 
@@ -27,6 +27,8 @@ void main() {
   ]);
   initializeDateFormatting('ko_KR', null);
   KakaoSdk.init(nativeAppKey: '1fdb8c2a87d39a7446137dc2963ee6a4');
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   runApp(const MyApp());
 }
 
@@ -112,6 +114,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver{
       data.forEach((element) {
         mealList.add(Meal.fromJson(element));
       });
+      FlutterNativeSplash.remove();
     });
     return "Sucessful";
   }

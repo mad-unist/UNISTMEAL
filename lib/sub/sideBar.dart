@@ -130,7 +130,7 @@ class _SideBarAppState extends State<SideBarApp> {
                 builder: (BuildContext context) {
                   return AlertDialog(
                     title: Text("개발자 문의", textAlign: TextAlign.center,),
-                    content: Text("밥먹어U 카카오톡 채널로 연결됩니다.", textAlign: TextAlign.center, style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.035,)),
+                    content: Text("밥먹어U 카카오톡 채널로 연결됩니다.\n\n (Developed by 정우진 & 박종서)", textAlign: TextAlign.center, style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.035,)),
                     actions: [
                       MaterialButton(
                         child: Text('취소'),
