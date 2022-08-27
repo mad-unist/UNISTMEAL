@@ -45,8 +45,6 @@
                 <data android:scheme="kakao1fdb8c2a87d39a7446137dc2963ee6a4" android:host="oauth"/>
             </intent-filter>
         </activity>
-       \ete the meta-data below.
-             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
