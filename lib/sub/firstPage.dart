@@ -337,7 +337,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                       color: Colors.yellow,
                       child : Showcase(
                         key: _key3,
-                        description: "식단표를 길게 터치해 식단을 평가하거나 공유하세요.",
+                        description: "식단표를 길게 터치해 식단을 평가하거나 공유하세요.\n페이지를 아래로 당겨, 별점을 새로고침 하세요.",
                         child: Container(),
                       ),
                     ),
