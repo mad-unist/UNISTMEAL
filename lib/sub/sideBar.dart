@@ -148,7 +148,7 @@ class _SideBarAppState extends State<SideBarApp> {
                           try {
                             await launchBrowserTab(url);
                           } catch (error) {
-
+                            print("error");
                           }
                         },
                       )
