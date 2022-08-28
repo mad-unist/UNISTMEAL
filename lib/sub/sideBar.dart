@@ -110,7 +110,7 @@ class _SideBarAppState extends State<SideBarApp> {
             title: Text('앱 버전 정보'),
             onTap: () {
               Fluttertoast.showToast(
-                  msg: "현재 버전: 2.0.0",
+                  msg: "현재 버전: 2.0.1",
                   toastLength: Toast.LENGTH_SHORT,
                   gravity: ToastGravity.BOTTOM,
                   timeInSecForIosWeb: 1,
