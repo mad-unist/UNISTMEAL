@@ -69,7 +69,7 @@ class _NoticeDialogState extends State<NoticeDialog> {
                       controller: pagecontroller,
                       itemCount: noticeList.length,
                       itemBuilder: (context, position) {
-                        return Expanded(
+                        return Container(
                           child: SingleChildScrollView(
                             scrollDirection: Axis.vertical,
                             child: Column(
