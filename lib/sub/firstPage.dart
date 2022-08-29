@@ -468,38 +468,14 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
             color: Colors.black,
           ),
           Expanded(
-            child: NotificationListener(
-              onNotification: (overscroll) {
-                if (overscroll is OverscrollNotification && overscroll.overscroll != 0 && overscroll.dragDetails != null) {
-                  if (controller?.index == 2 ) {
-                    if (_pageNotifier.value != 8) {
-                      pagecontroller.nextPage(
-                        curve: Curves.ease,
-                        duration: Duration(milliseconds: 500),
-                      );
-                      //controller?.animateTo(0, duration: Duration.zero);
-                    }
-                  }
-                  else if (controller?.index == 0) {
-                    if (_pageNotifier.value != 0) {
-                      pagecontroller.previousPage(
-                        curve: Curves.ease,
-                        duration: Duration(milliseconds: 500),
-                      );
-                      //controller?.animateTo(2, duration: Duration.zero);
-                    }
-                  }
-                }
-                return true;
-              },
-              child: TabBarView(
-                children: [
-                  exampleGridview(newlist?.where((data) => data.time == "아침").toList(), koreanDay, context, boolToday),
-                  exampleGridview(newlist?.where((data) => data.time == "점심").toList(), koreanDay, context, boolToday),
-                  exampleGridview(newlist?.where((data) => data.time == "저녁").toList(), koreanDay, context, boolToday),
-                ],
-                controller: controller,
-              ),
+            child: TabBarView(
+              physics: NeverScrollableScrollPhysics(),
+              children: [
+                exampleGridview(newlist?.where((data) => data.time == "아침").toList(), koreanDay, context, boolToday),
+                exampleGridview(newlist?.where((data) => data.time == "점심").toList(), koreanDay, context, boolToday),
+                exampleGridview(newlist?.where((data) => data.time == "저녁").toList(), koreanDay, context, boolToday),
+              ],
+              controller: controller,
             ),
           ),
         ],
