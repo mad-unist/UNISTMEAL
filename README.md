@@ -34,3 +34,8 @@
 | --- | --- |
 | 언어 | Django, Flutter |
 | Deploy | 구글플레이 스토어, 애플 스토어, Heroku |
+
+## Contact
+정우진 (woojin7879@unist.ac.kr)
+박종서 (jspark98@unist.ac.kr)
+
