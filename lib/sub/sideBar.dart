@@ -1,11 +1,16 @@
+import 'dart:convert';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:unistapp/sub/loginViewModel.dart';
 import 'package:unistapp/sub/noticePage.dart';
 import 'package:unistapp/sub/tutorialPage.dart';
+import 'package:http/http.dart' as http;
+import 'dart:io' show Platform;
 
 class SideBarApp extends StatefulWidget {
   final loginViewModel viewModel;
@@ -78,7 +83,7 @@ class _SideBarAppState extends State<SideBarApp> {
               ),
             ),
           ),
-          if (profileUrl[0] == '') IconButton(
+          if (profileUrl[0] == '' && Platform.isIOS) IconButton(
               icon: Image.asset(
                 "assets/images/kakao_login_large_wide.png",
                 fit: BoxFit.cover,
@@ -92,7 +97,7 @@ class _SideBarAppState extends State<SideBarApp> {
                   callbackFunction(true);
                 });
               },
-            ) else ListTile(
+            ) else if (profileUrl[0] != '' && Platform.isIOS) ListTile(
               leading: Icon(Icons.logout),
               title: Text('로그아웃'),
               onTap: () async{
@@ -104,6 +109,82 @@ class _SideBarAppState extends State<SideBarApp> {
                 });
               },
             ),
+          if (profileUrl[0] == '') IconButton(
+            icon: SignInWithAppleButton(
+              onPressed: () async{
+                try {
+                  final AuthorizationCredentialAppleID credential =
+                  await SignInWithApple.getAppleIDCredential(
+                    scopes: [
+                      AppleIDAuthorizationScopes.email,
+                      AppleIDAuthorizationScopes.fullName,
+                    ],
+                    webAuthenticationOptions: WebAuthenticationOptions(
+                      clientId: "2JPD37VSBU.unistbab.wjddnwls7879.com",
+                      redirectUri: Uri.parse(
+                        "https://pear-kind-bubble.glitch.me/callbacks/sign_in_with_apple",
+                      ),
+                    ),
+                  );
+
+                  print('credential.state = $credential');
+                  print('credential.state = ${credential.email}');
+                  print('credential.state = ${credential.userIdentifier}');
+
+                  setState(() {
+                    profileUrl = ['apple', (credential.givenName)! , credential.email ?? '이메일 정보가 없습니다', (credential.userIdentifier)!.toString()];
+                    setProfileUrl();
+                    postApple((credential.userIdentifier)!.toString(), credential.email);
+                    callbackFunction(true);
+                  });
+                } catch (error) {
+                  print('error = $error');
+                }
+              },
+            ),
+            iconSize: 40,
+            onPressed: () {
+
+            },
+          ) else ListTile(
+            leading: Icon(Icons.logout),
+            title: Text('회원 탈퇴'),
+            onTap: () async{
+              Navigator.pop(context, "Cancel");
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text("회원 탈퇴", textAlign: TextAlign.center,),
+                      content: Text("지금까지 평가한 데이터가 모두 삭제됩니다.\n 정말 탈퇴하시겠습니까?", textAlign: TextAlign.center, style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.035, color: Colors.redAccent)),
+                      actions: [
+                        MaterialButton(
+                          child: Text('취소'),
+                          minWidth: 0.5,
+                          onPressed: () {
+                            Navigator.pop(context, "Cancel");
+                          },
+                        ),
+                        MaterialButton(
+                          child: Text('탈퇴'),
+                          minWidth: 0.5,
+                          onPressed: () async {
+                            Navigator.pop(context, "Cancel");
+                            await deleteApple(profileUrl[3]);
+                            await viewModel.logout();
+                            setState(() {
+                              profileUrl = ['','카카오 로그인이 필요합니다','이메일 정보가 없습니다', ''];
+                              setProfileUrl();
+                              callbackFunction(false);
+                            });
+                          },
+                        )
+                      ],
+                    );
+                  }
+              );
+            },
+          ),
           Divider(),
           ListTile(
             leading: Icon(Icons.info),
@@ -200,6 +281,31 @@ class _SideBarAppState extends State<SideBarApp> {
           Divider(),
         ],
       ),
+    );
+  }
+
+  Future<http.Response> postApple(userId, email) async{
+    return await http.post(
+      Uri.parse('https://unist-meal-backend.herokuapp.com/account/v1/users'),
+      headers:{
+        'Content-Type': "application/json",
+      },
+      body: jsonEncode(<String, dynamic>{
+        "user_id": userId,
+        "email": email
+      }),
+    );
+  }
+
+  Future<http.Response> deleteApple(userId) async{
+    return await http.post(
+      Uri.parse('https://unist-meal-backend.herokuapp.com/account/v1/delete-user'),
+      headers:{
+        'Content-Type': "application/json",
+      },
+      body: jsonEncode(<String, dynamic>{
+        "user_id": userId,
+      }),
     );
   }
 

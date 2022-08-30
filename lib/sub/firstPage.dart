@@ -679,7 +679,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
               title: (todayRatingList.any((data) => data.menu == element.id))? Text('식단평가 수정하기') : Text('식단 평가하기'),
               onTap: () {
                 Navigator.pop(context, "Cancel");
-                if (viewModel.user != null){
+                if (viewModel.user != null || profileUrl[0] != ''){
                   createRatingDialog(context, element, rated);
                 } else {
                   Fluttertoast.showToast(
@@ -755,7 +755,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                     width: MediaQuery.of(context).size.width * 0.3,
                     child: Text('평가하기'),
                     onPressed: () async {
-                      if (viewModel.user != null){
+                      if (viewModel.user != null || profileUrl[0] != ''){
                         int time = 480;
                         switch (element.time) {
                           case "아침":
@@ -773,9 +773,9 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                             _btnController.success();
                           });
                           if (rated > 0) {
-                            await deleteRating(viewModel.user?.id, rated);
+                            await deleteRating(profileUrl[3], rated);
                           }
-                          await postRating(viewModel.user?.id, element.id, rate);
+                          await postRating(profileUrl[3], element.id, rate);
                           fetchToday();
                           Navigator.pop(context, "Cancel");
                           Fluttertoast.showToast(
@@ -831,7 +831,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
         'Content-Type': "application/json",
       },
       body: jsonEncode(<String, dynamic>{
-        "user_id": "${userId}",
+        "user_id": userId,
         "menu_id": mealId,
         "rating": rating
       }),
@@ -845,7 +845,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
         'Content-Type': "application/json",
       },
       body: jsonEncode(<String, dynamic>{
-        "user_id": "${userId}",
+        "user_id": userId,
         "menu_id": mealId,
       }),
     );
