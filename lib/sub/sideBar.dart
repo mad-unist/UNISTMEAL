@@ -110,6 +110,7 @@ class _SideBarAppState extends State<SideBarApp> {
               },
             ),
           if (profileUrl[0] == '' && Platform.isIOS) IconButton(
+            padding: EdgeInsets.only(left: 18, right: 18),
             icon: SignInWithAppleButton(
               onPressed: () async{
                 try {
