@@ -83,7 +83,7 @@ class _SideBarAppState extends State<SideBarApp> {
               ),
             ),
           ),
-          if (profileUrl[0] == '' && Platform.isIOS) IconButton(
+          if (profileUrl[0] == '') IconButton(
               icon: Image.asset(
                 "assets/images/kakao_login_large_wide.png",
                 fit: BoxFit.cover,
@@ -97,7 +97,7 @@ class _SideBarAppState extends State<SideBarApp> {
                   callbackFunction(true);
                 });
               },
-            ) else if (profileUrl[0] != '' && Platform.isIOS) ListTile(
+            ) else ListTile(
               leading: Icon(Icons.logout),
               title: Text('로그아웃'),
               onTap: () async{
@@ -109,7 +109,7 @@ class _SideBarAppState extends State<SideBarApp> {
                 });
               },
             ),
-          if (profileUrl[0] == '') IconButton(
+          if (profileUrl[0] == '' && Platform.isIOS) IconButton(
             icon: SignInWithAppleButton(
               onPressed: () async{
                 try {
@@ -146,7 +146,7 @@ class _SideBarAppState extends State<SideBarApp> {
             onPressed: () {
 
             },
-          ) else ListTile(
+          ) else if (profileUrl[0] != '' && Platform.isIOS) ListTile(
             leading: Icon(Icons.logout),
             title: Text('회원 탈퇴'),
             onTap: () async{
