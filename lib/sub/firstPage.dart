@@ -416,7 +416,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
     sortList = list?.where((element) => prefList.contains(element.place)).toList();
     sortList?.sort((a, b) {
       if (prefList.indexOf(a.place!) == prefList.indexOf(b.place!)) {
-        return ["한식","일품"].indexOf(a.type!).compareTo(["한식","일품"].indexOf(b.type!));
+        return ["한식","일품","자율식","간편식","","할랄"].indexOf(a.type!).compareTo(["한식","일품","자율식","간편식","","할랄"].indexOf(b.type!));
       } else {
         return prefList.indexOf(a.place!).compareTo(prefList.indexOf(b.place!));
       }

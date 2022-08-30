@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:crypto/crypto.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unistapp/socialLogin.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
@@ -26,7 +27,7 @@ class loginViewModel {
     isLogined = await _socialLogin.loginCheck();
     if (isLogined) {
       user = await UserApi.instance.me();
-      profileUrl = [(user?.kakaoAccount?.profile?.profileImageUrl)!, (user?.kakaoAccount?.profile?.nickname)!, user?.kakaoAccount?.email ?? '이메일 정보가 없습니다', (user?.id)!.toString()];
+      profileUrl = [(user?.kakaoAccount?.profile?.profileImageUrl)!, (user?.kakaoAccount?.profile?.nickname)!, user?.kakaoAccount?.email ?? '이메일 정보가 없습니다', sha256.convert(utf8.encode((user?.id)!.toString())).toString()];
       setProfileUrl();
     }
   }
@@ -35,8 +36,8 @@ class loginViewModel {
     isLogined = await _socialLogin.login();
     if (isLogined) {
       user = await UserApi.instance.me();
-      postKakao(user?.id, user?.kakaoAccount?.email);
-      profileUrl = [(user?.kakaoAccount?.profile?.profileImageUrl)!, (user?.kakaoAccount?.profile?.nickname)!, user?.kakaoAccount?.email ?? '이메일 정보가 없습니다', (user?.id)!.toString()];
+      profileUrl = [(user?.kakaoAccount?.profile?.profileImageUrl)!, (user?.kakaoAccount?.profile?.nickname)!, user?.kakaoAccount?.email ?? '이메일 정보가 없습니다', sha256.convert(utf8.encode((user?.id)!.toString())).toString()];
+      postKakao(profileUrl[3], user?.kakaoAccount?.email);
       setProfileUrl();
     }
   }

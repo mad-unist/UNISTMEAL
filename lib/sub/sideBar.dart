@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:crypto/crypto.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -92,7 +92,7 @@ class _SideBarAppState extends State<SideBarApp> {
               onPressed: () async{
                 await viewModel.login();
                 setState(() {
-                  profileUrl = [(viewModel.user?.kakaoAccount?.profile?.profileImageUrl)!, (viewModel.user?.kakaoAccount?.profile?.nickname)!, viewModel.user?.kakaoAccount?.email ?? '이메일 정보가 없습니다', (viewModel.user?.id)!.toString()];
+                  profileUrl = [(viewModel.user?.kakaoAccount?.profile?.profileImageUrl)!, (viewModel.user?.kakaoAccount?.profile?.nickname)!, viewModel.user?.kakaoAccount?.email ?? '이메일 정보가 없습니다', sha256.convert(utf8.encode((viewModel.user?.id)!.toString())).toString()];
                   setProfileUrl();
                   callbackFunction(true);
                 });
@@ -133,9 +133,9 @@ class _SideBarAppState extends State<SideBarApp> {
                   print('credential.state = ${credential.userIdentifier}');
 
                   setState(() {
-                    profileUrl = ['apple', (credential.givenName)! , credential.email ?? '이메일 정보가 없습니다', (credential.userIdentifier)!.toString()];
+                    profileUrl = ['apple', (credential.givenName)! , credential.email ?? '이메일 정보가 없습니다', sha256.convert(utf8.encode((credential.userIdentifier)!)).toString()];
                     setProfileUrl();
-                    postApple((credential.userIdentifier)!.toString(), credential.email);
+                    postApple(profileUrl[3], credential.email);
                     callbackFunction(true);
                   });
                 } catch (error) {
