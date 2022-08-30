@@ -29,15 +29,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>kakao1fdb8c2a87d39a7446137dc2963ee6a4://oauth</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>kakao1fdb8c2a87d39a7446137dc2963ee6a4://kakaolink</string>
+				<string>kakao1fdb8c2a87d39a7446137dc2963ee6a4</string>
 			</array>
 		</dict>
 	</array>
