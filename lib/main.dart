@@ -18,15 +18,17 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:unistapp/sub/secondPage.dart';
 import 'package:unistapp/sub/thirdPage.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown
   ]);
   initializeDateFormatting('ko_KR', null);
-  KakaoSdk.init(nativeAppKey: '1fdb8c2a87d39a7446137dc2963ee6a4');
+  KakaoSdk.init(nativeAppKey: dotenv.env['Kakao_native_key']);
   runApp(const MyApp());
 }
 

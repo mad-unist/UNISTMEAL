@@ -11,6 +11,7 @@ import 'package:unistapp/sub/noticePage.dart';
 import 'package:unistapp/sub/tutorialPage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io' show Platform;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class SideBarApp extends StatefulWidget {
   final loginViewModel viewModel;
@@ -28,8 +29,9 @@ class _SideBarAppState extends State<SideBarApp> {
   int currentIndex = 0;
   _SideBarAppState(this.viewModel, this.callbackFunction);
 
-  void initState() {
+  void initState() async {
     super.initState();
+    await dotenv.load(fileName: ".env");
     getProfileUrl();
     _loginCheck();
   }
@@ -121,9 +123,9 @@ class _SideBarAppState extends State<SideBarApp> {
                       AppleIDAuthorizationScopes.fullName,
                     ],
                     webAuthenticationOptions: WebAuthenticationOptions(
-                      clientId: "2JPD37VSBU.unistbab.wjddnwls7879.com",
+                      clientId: dotenv.env['Apple_client_id']!,
                       redirectUri: Uri.parse(
-                        "https://pear-kind-bubble.glitch.me/callbacks/sign_in_with_apple",
+                        dotenv.env['redirectURI']!,
                       ),
                     ),
                   );
