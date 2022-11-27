@@ -416,7 +416,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
     sortList = list?.where((element) => prefList.contains(element.place)).toList();
     sortList?.sort((a, b) {
       if (prefList.indexOf(a.place!) == prefList.indexOf(b.place!)) {
-        return ["한식","일품","자율식","간편식","","할랄"].indexOf(a.type!).compareTo(["한식","일품","자율식","간편식","","할랄"].indexOf(b.type!));
+        return ["공지","","한식","일품","자율식","간편식","할랄"].indexOf(a.type!).compareTo(["공지","","한식","일품","자율식","간편식","할랄"].indexOf(b.type!));
       } else {
         return prefList.indexOf(a.place!).compareTo(prefList.indexOf(b.place!));
       }
@@ -471,9 +471,9 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
             child: TabBarView(
               physics: NeverScrollableScrollPhysics(),
               children: [
-                exampleGridview(newlist?.where((data) => data.time == "아침").toList(), koreanDay, context, boolToday),
-                exampleGridview(newlist?.where((data) => data.time == "점심").toList(), koreanDay, context, boolToday),
-                exampleGridview(newlist?.where((data) => data.time == "저녁").toList(), koreanDay, context, boolToday),
+                exampleGridview(newlist?.where((data) => data.time == "아침" || data.type == "공지").toList(), koreanDay, context, boolToday),
+                exampleGridview(newlist?.where((data) => data.time == "점심" || data.type == "공지").toList(), koreanDay, context, boolToday),
+                exampleGridview(newlist?.where((data) => data.time == "저녁" || data.type == "공지").toList(), koreanDay, context, boolToday),
               ],
               controller: controller,
             ),
@@ -557,12 +557,12 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                       Container(
                         padding: EdgeInsets.only(top: 2 * unitWidthValue,),
                       ),
-                      Text('${gridList?[position].calorie!}Kcal', style: TextStyle(fontSize: multiplier * unitWidthValue, fontWeight: FontWeight. bold),),
+                      if (gridList?[position].calorie != null) if ((gridList?[position].calorie)! > 0)  Text('${gridList?[position].calorie!}Kcal', style: TextStyle(fontSize: multiplier * unitWidthValue, fontWeight: FontWeight. bold),),
                     ],
                   ),
                 ),
                 Spacer(),
-                boolToday? Container(
+                (boolToday & (gridList?[position].type != "공지"))? Container(
                   child: Column(
                     children: [
                       Row(
