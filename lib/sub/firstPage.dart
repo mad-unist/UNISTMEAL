@@ -674,7 +674,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                 Navigator.pop(context, "Cancel");
               },
             ),
-            boolToday? ListTile(
+            (boolToday & (element.type != "공지"))? ListTile(
               leading: Icon(Icons.star),
               title: (todayRatingList.any((data) => data.menu == element.id))? Text('식단평가 수정하기') : Text('식단 평가하기'),
               onTap: () {
@@ -694,7 +694,14 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                   _scaffoldKey.currentState?.openDrawer();
                 }
               },
-            ) : Container()
+            ) : Container(),
+            (element.type == "공지")? ListTile(
+              leading: Icon(Icons.star),
+              title: Text('공지 자세히 보기'),
+              onTap: () {
+
+              },
+            ) : Container(),
           ],
         );
       },

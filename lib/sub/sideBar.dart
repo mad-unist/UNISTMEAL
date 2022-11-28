@@ -11,7 +11,6 @@ import 'package:unistapp/sub/noticePage.dart';
 import 'package:unistapp/sub/tutorialPage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io' show Platform;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class SideBarApp extends StatefulWidget {
   final loginViewModel viewModel;
@@ -29,9 +28,8 @@ class _SideBarAppState extends State<SideBarApp> {
   int currentIndex = 0;
   _SideBarAppState(this.viewModel, this.callbackFunction);
 
-  void initState() async {
+  void initState() {
     super.initState();
-    await dotenv.load(fileName: ".env");
     getProfileUrl();
     _loginCheck();
   }
@@ -69,8 +67,8 @@ class _SideBarAppState extends State<SideBarApp> {
               child: ClipOval(
                 child: CachedNetworkImage(
                   imageUrl: viewModel.user?.kakaoAccount?.profile?.profileImageUrl ?? profileUrl[0],
-                    placeholder: (context, url) => new CircularProgressIndicator(),
-                    errorWidget: (context, url, error) => new Icon(Icons.error),
+                  placeholder: (context, url) => new CircularProgressIndicator(),
+                  errorWidget: (context, url, error) => new Icon(Icons.error),
                   fit: BoxFit.cover,
                   width: 90,
                   height: 90,
@@ -80,37 +78,37 @@ class _SideBarAppState extends State<SideBarApp> {
             decoration: BoxDecoration(
               color: Colors.blue,
               image: DecorationImage(
-                  fit: BoxFit.fill,
-                  image: AssetImage("assets/images/sidebarpicture.png"),
+                fit: BoxFit.fill,
+                image: AssetImage("assets/images/sidebarpicture.png"),
               ),
             ),
           ),
           if (profileUrl[0] == '') IconButton(
-              icon: Image.asset(
-                "assets/images/kakao_login_large_wide.png",
-                fit: BoxFit.cover,
-              ),
-              iconSize: 40,
-              onPressed: () async{
-                await viewModel.login();
-                setState(() {
-                  profileUrl = [(viewModel.user?.kakaoAccount?.profile?.profileImageUrl)!, (viewModel.user?.kakaoAccount?.profile?.nickname)!, viewModel.user?.kakaoAccount?.email ?? '이메일 정보가 없습니다', sha256.convert(utf8.encode((viewModel.user?.id)!.toString())).toString()];
-                  setProfileUrl();
-                  callbackFunction(true);
-                });
-              },
-            ) else ListTile(
-              leading: Icon(Icons.logout),
-              title: Text('로그아웃'),
-              onTap: () async{
-                await viewModel.logout();
-                setState(() {
-                  profileUrl = ['','카카오 로그인이 필요합니다','이메일 정보가 없습니다', ''];
-                  setProfileUrl();
-                  callbackFunction(false);
-                });
-              },
+            icon: Image.asset(
+              "assets/images/kakao_login_large_wide.png",
+              fit: BoxFit.cover,
             ),
+            iconSize: 40,
+            onPressed: () async{
+              await viewModel.login();
+              setState(() {
+                profileUrl = [(viewModel.user?.kakaoAccount?.profile?.profileImageUrl)!, (viewModel.user?.kakaoAccount?.profile?.nickname)!, viewModel.user?.kakaoAccount?.email ?? '이메일 정보가 없습니다', sha256.convert(utf8.encode((viewModel.user?.id)!.toString())).toString()];
+                setProfileUrl();
+                callbackFunction(true);
+              });
+            },
+          ) else ListTile(
+            leading: Icon(Icons.logout),
+            title: Text('로그아웃'),
+            onTap: () async{
+              await viewModel.logout();
+              setState(() {
+                profileUrl = ['','카카오 로그인이 필요합니다','이메일 정보가 없습니다', ''];
+                setProfileUrl();
+                callbackFunction(false);
+              });
+            },
+          ),
           if (profileUrl[0] == '' && Platform.isIOS) IconButton(
             padding: EdgeInsets.only(left: 18, right: 18),
             icon: SignInWithAppleButton(
@@ -123,9 +121,9 @@ class _SideBarAppState extends State<SideBarApp> {
                       AppleIDAuthorizationScopes.fullName,
                     ],
                     webAuthenticationOptions: WebAuthenticationOptions(
-                      clientId: dotenv.env['Apple_client_id']!,
+                      clientId: "2JPD37VSBU.unistbab.wjddnwls7879.com",
                       redirectUri: Uri.parse(
-                        dotenv.env['redirectURI']!,
+                        "https://pear-kind-bubble.glitch.me/callbacks/sign_in_with_apple",
                       ),
                     ),
                   );
@@ -194,7 +192,7 @@ class _SideBarAppState extends State<SideBarApp> {
             title: Text('앱 버전 정보'),
             onTap: () {
               Fluttertoast.showToast(
-                  msg: "현재 버전: 2.0.1",
+                  msg: "현재 버전: 2.0.2",
                   toastLength: Toast.LENGTH_SHORT,
                   gravity: ToastGravity.BOTTOM,
                   timeInSecForIosWeb: 1,
@@ -210,35 +208,35 @@ class _SideBarAppState extends State<SideBarApp> {
             onTap: () async {
               Navigator.pop(context, "Cancel");
               showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text("개발자 문의", textAlign: TextAlign.center,),
-                    content: Text("밥먹어U 카카오톡 채널로 연결됩니다.\n\n Developed by 정우진 박종서", textAlign: TextAlign.center, style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.035,)),
-                    actions: [
-                      MaterialButton(
-                        child: Text('취소'),
-                        minWidth: 0.5,
-                        onPressed: () {
-                          Navigator.pop(context, "Cancel");
-                        },
-                      ),
-                      MaterialButton(
-                        child: Text('확인'),
-                        minWidth: 0.5,
-                        onPressed: () async {
-                          Navigator.pop(context, "Cancel");
-                          Uri url = await TalkApi.instance.channelChatUrl('_xcaYlxj');
-                          try {
-                            await launchBrowserTab(url);
-                          } catch (error) {
-                            print("error");
-                          }
-                        },
-                      )
-                    ],
-                  );
-                }
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text("개발자 문의", textAlign: TextAlign.center,),
+                      content: Text("밥먹어U 카카오톡 채널로 연결됩니다.\n\n Developed by 정우진 박종서", textAlign: TextAlign.center, style: TextStyle(fontSize: MediaQuery.of(context).size.width * 0.035,)),
+                      actions: [
+                        MaterialButton(
+                          child: Text('취소'),
+                          minWidth: 0.5,
+                          onPressed: () {
+                            Navigator.pop(context, "Cancel");
+                          },
+                        ),
+                        MaterialButton(
+                          child: Text('확인'),
+                          minWidth: 0.5,
+                          onPressed: () async {
+                            Navigator.pop(context, "Cancel");
+                            Uri url = await TalkApi.instance.channelChatUrl('_xcaYlxj');
+                            try {
+                              await launchBrowserTab(url);
+                            } catch (error) {
+                              print("error");
+                            }
+                          },
+                        )
+                      ],
+                    );
+                  }
               );
             },
           ),
