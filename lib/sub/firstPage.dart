@@ -62,19 +62,19 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
   void getGoodList() async{
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      goodList = prefs.getStringList("goodList")!;
+      goodList = prefs.getStringList("goodList") ?? [];
     });
   }
   void getBadList() async{
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      badList = prefs.getStringList("badList")!;
+      badList = prefs.getStringList("badList") ?? [];
     });
   }
   void getPrefList() async{
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      prefList = prefs.getStringList("prefList")!;
+      prefList = prefs.getStringList("prefList") ?? ["기숙사식당", "학생식당","교직원식당"];
     });
   }
   void setPrefList(setList) async{
@@ -87,7 +87,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
   void getProfileUrl() async{
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      profileUrl = prefs.getStringList("profileUrl")!;
+      profileUrl = prefs.getStringList("profileUrl") ?? ['','카카오 로그인이 필요합니다','이메일 정보가 없습니다',''];
       fetchTodayRating();
     });
   }
@@ -842,6 +842,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
         "menu_id": mealId,
         "rating": rating
       }),
+      encoding: Encoding.getByName("utf-8"),
     );
   }
 

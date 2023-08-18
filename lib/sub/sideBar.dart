@@ -44,7 +44,7 @@ class _SideBarAppState extends State<SideBarApp> {
   void getProfileUrl() async{
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      profileUrl = prefs.getStringList("profileUrl")!;
+      profileUrl = prefs.getStringList("profileUrl") ?? ['','카카오 로그인이 필요합니다','이메일 정보가 없습니다',''];
     });
   }
 
