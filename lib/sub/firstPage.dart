@@ -62,19 +62,19 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
   void getGoodList() async{
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      goodList = prefs.getStringList("goodList")!;
+      goodList = prefs.getStringList("goodList") ?? [];
     });
   }
   void getBadList() async{
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      badList = prefs.getStringList("badList")!;
+      badList = prefs.getStringList("badList") ?? [];
     });
   }
   void getPrefList() async{
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      prefList = prefs.getStringList("prefList")!;
+      prefList = prefs.getStringList("prefList") ?? ["기숙사식당", "학생식당","교직원식당"];
     });
   }
   void setPrefList(setList) async{
@@ -87,7 +87,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
   void getProfileUrl() async{
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      profileUrl = prefs.getStringList("profileUrl")!;
+      profileUrl = prefs.getStringList("profileUrl") ?? ['','카카오 로그인이 필요합니다','이메일 정보가 없습니다',''];
       fetchTodayRating();
     });
   }
@@ -416,7 +416,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
     sortList = list?.where((element) => prefList.contains(element.place)).toList();
     sortList?.sort((a, b) {
       if (prefList.indexOf(a.place!) == prefList.indexOf(b.place!)) {
-        return ["한식","일품","자율식","간편식","","할랄"].indexOf(a.type!).compareTo(["한식","일품","자율식","간편식","","할랄"].indexOf(b.type!));
+        return ["공지","","한식","일품","자율식","간편식","할랄"].indexOf(a.type!).compareTo(["공지","","한식","일품","자율식","간편식","할랄"].indexOf(b.type!));
       } else {
         return prefList.indexOf(a.place!).compareTo(prefList.indexOf(b.place!));
       }
@@ -471,9 +471,9 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
             child: TabBarView(
               physics: NeverScrollableScrollPhysics(),
               children: [
-                exampleGridview(newlist?.where((data) => data.time == "아침").toList(), koreanDay, context, boolToday),
-                exampleGridview(newlist?.where((data) => data.time == "점심").toList(), koreanDay, context, boolToday),
-                exampleGridview(newlist?.where((data) => data.time == "저녁").toList(), koreanDay, context, boolToday),
+                exampleGridview(newlist?.where((data) => data.time == "아침" || data.type == "공지").toList(), koreanDay, context, boolToday),
+                exampleGridview(newlist?.where((data) => data.time == "점심" || data.type == "공지").toList(), koreanDay, context, boolToday),
+                exampleGridview(newlist?.where((data) => data.time == "저녁" || data.type == "공지").toList(), koreanDay, context, boolToday),
               ],
               controller: controller,
             ),
@@ -557,12 +557,12 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                       Container(
                         padding: EdgeInsets.only(top: 2 * unitWidthValue,),
                       ),
-                      Text('${gridList?[position].calorie!}Kcal', style: TextStyle(fontSize: multiplier * unitWidthValue, fontWeight: FontWeight. bold),),
+                      if (gridList?[position].calorie != null) if ((gridList?[position].calorie)! > 0)  Text('${gridList?[position].calorie!}Kcal', style: TextStyle(fontSize: multiplier * unitWidthValue, fontWeight: FontWeight. bold),),
                     ],
                   ),
                 ),
                 Spacer(),
-                boolToday? Container(
+                (boolToday & (gridList?[position].type != "공지"))? Container(
                   child: Column(
                     children: [
                       Row(
@@ -674,7 +674,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                 Navigator.pop(context, "Cancel");
               },
             ),
-            boolToday? ListTile(
+            (boolToday & (element.type != "공지"))? ListTile(
               leading: Icon(Icons.star),
               title: (todayRatingList.any((data) => data.menu == element.id))? Text('식단평가 수정하기') : Text('식단 평가하기'),
               onTap: () {
@@ -694,7 +694,14 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
                   _scaffoldKey.currentState?.openDrawer();
                 }
               },
-            ) : Container()
+            ) : Container(),
+            (element.type == "공지")? ListTile(
+              leading: Icon(Icons.star),
+              title: Text('공지 자세히 보기'),
+              onTap: () {
+
+              },
+            ) : Container(),
           ],
         );
       },
@@ -835,6 +842,7 @@ class _MealAppState extends State<MealApp> with SingleTickerProviderStateMixin{
         "menu_id": mealId,
         "rating": rating
       }),
+      encoding: Encoding.getByName("utf-8"),
     );
   }
 
